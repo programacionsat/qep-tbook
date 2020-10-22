@@ -19,7 +19,7 @@
             <div class="container" style="color: white;">
                 <div class="d-flex align-items-center justify-content-between" style="min-height: 100px;">
                     <div>
-                        <img src="<?php echo base_url(); ?>/assets/img/Logo-MundoR.svg">
+                        <img src="<?php echo base_url(); ?>assets/img/Logo-MundoR.png">
                         <a href="<?php echo base_url(); ?>" class="titulo">¿qué está pasando en Tbook?</a>
                     </div>
                     
