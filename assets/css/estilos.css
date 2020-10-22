@@ -1,0 +1,155 @@
+header {
+    background-color: #444;
+    min-height: 100px;
+}
+
+header a:hover {
+    text-decoration: none;
+}
+
+a.titulo {
+    color: white;
+    background-color: #ef3340;
+    padding: 0 5px 5px 5px;
+    font-weight: bold;
+    border-radius: 3px;
+}
+
+.menu-principal {
+    color: white;
+}
+
+.menu-principal a {
+    color: white;
+}
+
+.filtros-link {
+    cursor: pointer;
+}
+
+footer {
+    margin-top: 35px;
+    background-color: #444;
+    min-height: 100px;
+    padding: 20px 10px;
+    color: #BFBFBF;
+}
+
+footer a {
+    color: #ccc;
+    text-decoration: underline;
+}
+
+footer a:hover {
+    color: white;
+}
+
+.tabla-incidencias {
+    border-collapse: separate;
+    border-spacing: 5px;
+    width: 100%;
+}
+
+.tabla-listado-incidencias th {
+    white-space: nowrap;
+}
+
+.tabla-listado-incidencias td {
+    font-size: 0.8rem;
+}
+
+.celda-hora {
+    color: #000;
+    background-color: #eee;
+}
+
+.celda-incidencias, 
+.celda-hora {
+    text-align: center;
+    font-weight: 400;
+    border: 1px solid #d2d2d2;
+    padding: 7px;
+    border-radius: 4px;
+}
+
+.celda-incidencias:hover {
+    background-color: #eee;
+}
+
+a.dato-inc {
+    text-decoration: none;
+    color: black;
+}
+
+a.dato-inc:hover {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.celda-cabecera {
+    white-space: normal;
+    width: 10%;
+}
+
+.enlace-servicio {
+    color: white;
+}
+
+.enlace-servicio:hover {
+    color: white;
+}
+
+.menu-agrupacion {
+    border-bottom: 1px solid #eee;
+}
+
+.menu-agrupacion-sub {
+    background-color: #f0f4f8;
+}
+
+a.nav-link-active,
+a.nav-sublink-active {
+    color: #ef3340;
+}
+
+a.nav-link-active {
+    font-weight: bold;
+}
+
+/*
+    Modal
+*/
+.modal-listado {
+    max-height: 450px; 
+    overflow: auto;
+}
+
+
+.popover-body ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+/*
+    Botón para regresar al comienzo de la página (scroll to top)
+*/
+#boton-top {
+  display: none; /* Hidden by default */
+  position: fixed; /* Fixed/sticky position */
+  bottom: 20px; /* Place the button at the bottom of the page */
+  right: 30px; /* Place the button 30px from the right */
+  z-index: 99; /* Make sure it does not overlap */
+  border: none; /* Remove borders */
+  outline: none; /* Remove outline */
+  background-color: red; /* Set a background color */
+  color: white; /* Text color */
+  cursor: pointer; /* Add a mouse pointer on hover */
+  padding: 5px 15px; /* Some padding */
+  border-radius: 5px; /* Rounded corners */
+  font-size: 1.2rem; /* Increase font size */
+}
+
+#boton-top:hover {
+  background-color: #ef3340; /* Add a dark-grey background on hover */
+}
