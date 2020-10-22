@@ -94,9 +94,18 @@ for ($h = $hora_inicio; $h <= $hora_fin; $h++) {
                         <tbody>
 <?php
 foreach ($listado_servicios_mostrar_web as $servicio_afectado => $servicio_afectado_web) {
+
+    //  Versión con enlace al servicio:
+    /*
     echo "
                             <tr>
                                 <td class=\"celda-incidencias celda-cabecera bg-dark text-white\"><a class=\"enlace-servicio\" href=\"" . base_url("index.php/incidencias/servicios/") . "{$servicio_afectado}\">{$servicio_afectado_web}</a></td>";
+    */
+
+    //  Versión sin enlace en el nombre del servicio:
+    echo "
+                            <tr>
+                                <td class=\"celda-incidencias celda-cabecera bg-dark text-white\">{$servicio_afectado_web}</td>";
     for ($h = $hora_inicio; $h <= $hora_fin; $h++) {
 
         if (array_key_exists($servicio_afectado, $servicios)) {
