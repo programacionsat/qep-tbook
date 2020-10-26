@@ -1,3 +1,19 @@
+@font-face {
+    font-family: 'R Gerstner';
+    src: url('../fonts/RGerstner-Bold.woff2') format('woff2'),
+        url('../fonts/RGerstner-Bold.woff') format('woff'),
+        url('../fonts/RGerstner-Bold.ttf') format('truetype'),
+        url('../fonts/RGerstner-Bold.svg#RGerstner-Bold') format('svg');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+h1, h2, h3 {
+    font-family: 'R Gerstner', sans-serif;
+    font-weight: bold;
+}
+
 header {
     background-color: #444;
     min-height: 100px;
@@ -8,10 +24,11 @@ header a:hover {
 }
 
 a.titulo {
+    font-family: 'R Gerstner', sans-serif;
+    font-weight: bold;
     color: white;
     background-color: #ef3340;
-    padding: 0 5px 5px 5px;
-    font-weight: bold;
+    padding: 5px 10px 8px 5px;
     border-radius: 3px;
 }
 
@@ -77,6 +94,8 @@ footer a:hover {
 }
 
 a.dato-inc {
+    font-family: 'R Gerstner', sans-serif;
+    font-weight: bold;
     text-decoration: none;
     color: black;
 }
