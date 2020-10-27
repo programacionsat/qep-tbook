@@ -2,6 +2,8 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+ini_set("memory_limit", "2048M");
+
 class Tools extends CI_Controller {
 
     public function __construct() {
@@ -93,6 +95,135 @@ class Tools extends CI_Controller {
         } else {
             echo "<strong>Este script solo se puede utilizar desde línea de comandos</strong>" . PHP_EOL;
         }
+    }
+
+
+    public function obtener_dia_semana($ano) {
+
+        $fecha_inicio = new DateTime("first monday of January" . $ano);
+        //  $fecha_inicio = new DateTime($ano . "-01-01");
+
+        $fecha_fin = new DateTime($ano . "-12-31");
+/*
+        if (1 != $fecha_inicio->format('N')) {
+            $fecha_inicio->modify('next monday');
+        }
+*/
+        while ($fecha_inicio <= $fecha_fin) {
+            //  $dates[] = $dateFrom->format('Y-m-d');
+            echo $fecha_inicio->format("Y-m-d") . PHP_EOL;
+            $fecha_inicio->modify('+1 week');
+        }
+/*
+        $endDate = strtotime($endDate);
+        for($i = strtotime('Monday', strtotime($startDate)); $i <= $endDate; $i = strtotime('+1 week', $i))
+            echo date('l Y-m-d', $i);
+*/
+    }
+
+
+    //  Genera todos los días de un año 
+    public function calendario($ano) {
+
+        $dias_semana = [
+            "Monday"    => "Lunes",
+            "Tuesday"   => "Martes",
+            "Wednesday" => "Miércoles",
+            "Thursday"  => "Jueves",
+            "Friday"    => "Viernes",
+            "Saturday"  => "Sábado",
+            "Sunday"    => "Domingo"
+        ];
+
+        $meses = [
+            "January"   => "Enero",
+            "February"  => "Febrero",
+            "March"     => "Marzo",
+            "April"     => "Abril",
+            "May"       => "Mayo",
+            "June"      => "Junio",
+            "July"      => "Julio",
+            "August"    => "Agosto",
+            "September" => "Septiembre",
+            "October"   => "Octubre",
+            "November"  => "Noviembre",
+            "December"  => "Diciembre"
+        ];
+
+        $fecha_inicio = new DateTime($ano . "-01-01");
+        $fecha_fin = new DateTime($ano . "-12-31");
+
+        $fecha_datos = [];
+
+        while ($fecha_inicio <= $fecha_fin) {
+
+            $fecha_datos = [
+                "fecha"             => $fecha_inicio->format("Y-m-d"),
+                "nombre_dia"        => $dias_semana[$fecha_inicio->format("l")],
+                "numero_dia_semana" => $fecha_inicio->format("N"),         
+                "ano"               => $fecha_inicio->format("Y"),
+                "nombre_mes"        => $meses[$fecha_inicio->format("F")],
+                "numero_mes"        => $fecha_inicio->format("n"),
+            ];
+
+            if (!$insertar_fecha = $this->mysql_model->insertar_fecha($fecha_datos)) {
+                echo "Error SQL insertando fecha en calendario" . PHP_EOL;
+                exit();
+            }
+
+            $fecha_inicio->modify("+1 day");
+        }
+
+    }
+
+    public function calcular_umbrales($ano_inicio, $ano_fin) {
+
+        $dias_semana = [
+            1 => "Lunes",
+            2 => "Martes",
+            3 => "Miércoles",
+            4 => "Jueves",
+            5 => "Viernes",
+            6 => "Sábado",
+            7 => "Domingo"
+        ];
+
+        $dias_totales = [];
+        $umbrales = [];
+        foreach ($dias_semana as $numero_dia => $dia) {
+            
+            //  Según los días de la semana
+            $fechas = $this->mysql_model->obtener_numero_fechas($dia, $ano_inicio, $ano_fin);
+            $dias_totales[$dia] = $fechas[0]["dias"];
+
+            //  var_dump($dias_totales);
+
+            //  Buscamos las incidencias por servicio, hora y tipo de cliente
+            $incidencias = $this->mysql_model->obtener_incidencias_servicio_umbrales($dia, $ano_inicio, $ano_fin);
+            foreach ($incidencias as $incidencia) {
+                $umbrales[] = [
+                    "nombre_dia"            => $dia,
+                    "numero_dia"            => $numero_dia,
+                    "hora"                  => $incidencia["hora"],
+                    "servicio_afectado"     => $incidencia["servicio_afectado"],
+                    "tipo_cliente"          => $incidencia["tipo_cliente"],
+                    "incidencias_promedio"  => round($incidencia["total"] / $dias_totales[$dia], 2)
+                ];
+            }
+        
+        }
+
+        //  var_dump($umbrales);
+
+        //  Insertamos los umbrales en la base de datos
+        foreach ($umbrales as $umbral) {
+            
+            if (!$insertar_umbral = $this->mysql_model->insertar_umbral($umbral)) {
+                echo "Error SQL insertando umbral" . PHP_EOL;
+                exit();
+            }
+        }
+
     }
 
 }

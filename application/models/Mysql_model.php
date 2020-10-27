@@ -125,12 +125,16 @@ class MySQL_model extends CI_Model {
 
     }
 
+    //  $tipo_cliente = Empresa | Todo
     public function obtener_incidencias_sin_servicio_hora($fecha, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -154,10 +158,13 @@ class MySQL_model extends CI_Model {
 
     public function obtener_incidencias_otros_servicios_hora($filtro_servicios, $fecha, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -182,10 +189,13 @@ class MySQL_model extends CI_Model {
     //  Obtener el conteo de incidencias por servicio
     public function obtener_incidencias_servicio_hora($servicio, $fecha, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -303,10 +313,13 @@ class MySQL_model extends CI_Model {
     //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
     public function obtener_listado_incidencias_servicio_hora($servicio, $fecha, $hora, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -329,10 +342,13 @@ class MySQL_model extends CI_Model {
     //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
     public function obtener_listado_incidencias_sin_servicio_hora($fecha, $hora, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -355,10 +371,13 @@ class MySQL_model extends CI_Model {
     //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
     public function obtener_listado_incidencias_otros_servicios_hora($filtro_servicios, $fecha, $hora, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -382,10 +401,13 @@ class MySQL_model extends CI_Model {
     //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
     public function obtener_listado_incidencias_servicio($servicio, $fecha, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -407,10 +429,13 @@ class MySQL_model extends CI_Model {
     //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
     public function obtener_listado_incidencias_sin_servicio($fecha, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -432,10 +457,13 @@ class MySQL_model extends CI_Model {
     //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
     public function obtener_listado_incidencias_otros_servicios($filtro_servicios, $fecha, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -510,10 +538,13 @@ class MySQL_model extends CI_Model {
     //  Devuelve un listado de los NTT de una determinada fecha
     public function obtener_ntts($fecha, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -537,10 +568,13 @@ class MySQL_model extends CI_Model {
 
     public function obtener_ntts_hora($fecha, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -567,10 +601,13 @@ class MySQL_model extends CI_Model {
     //  Devuelve información de un ticket de red
     public function obtener_info_ntt($ntt, $fecha, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -599,10 +636,13 @@ class MySQL_model extends CI_Model {
 
     public function obtener_listado_incidencias_correladas_hora($ntt, $fecha, $hora, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -624,10 +664,13 @@ class MySQL_model extends CI_Model {
 
     public function obtener_listado_incidencias_zonas_hora($zona, $fecha, $hora, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -649,10 +692,13 @@ class MySQL_model extends CI_Model {
 
     public function obtener_listado_incidencias_zonas($zona, $fecha, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -673,10 +719,13 @@ class MySQL_model extends CI_Model {
 
     public function obtener_listado_incidencias_correladas($ntt, $fecha, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -731,10 +780,13 @@ class MySQL_model extends CI_Model {
 
     public function obtener_incidencias_zona_hora($fecha, $tipo_cliente) {
 
-        if ($tipo_cliente == "todo") {
-            $filtro_tipo_cliente = "";
-        } else {
-            $filtro_tipo_cliente = "AND tipo_cliente = '{$tipo_cliente}'";
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
         }
 
         $sql = "
@@ -753,6 +805,92 @@ class MySQL_model extends CI_Model {
         $query = $this->mysql->query($sql);
 
         return $query->result_array(); 
+
+    }
+
+    //  Inserta una fecha con todos sus datos en la tabla
+    //  de calendario.
+    public function insertar_fecha($fecha) {
+
+        $datos = [
+            "fecha"             => $fecha["fecha"],
+            "nombre_dia"        => $fecha["nombre_dia"],
+            "numero_dia_semana" => $fecha["numero_dia_semana"],
+            "ano"               => $fecha["ano"],
+            "nombre_mes"        => $fecha["nombre_mes"],
+            "numero_mes"        => $fecha["numero_mes"]
+        ];
+
+        $query = $this->mysql->insert('calendario', $datos);
+
+        return $query;
+
+    }
+
+    //  Devuelve el número de apariciones de cierto día en un rango temporal
+    //  Por ejemplo, el número de lunes desde 2018 hasta 2020
+    public function obtener_numero_fechas($nombre_dia_semana, $ano_inicio, $ano_fin) {
+
+        $sql = "
+
+            SELECT COUNT(fecha) as dias
+            FROM calendario c
+            WHERE c.ano >= $ano_inicio
+              AND c.ano <= $ano_fin
+              AND c.nombre_dia = '{$nombre_dia_semana}'
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
+
+    }
+
+    public function obtener_incidencias_servicio_umbrales($nombre_dia_semana, $ano_inicio, $ano_fin) {
+
+        $sql = "
+
+            SELECT 
+                HOUR(t.fecha_creacion) AS hora,
+                t.servicio_afectado AS servicio_afectado,
+                t.tipo_cliente AS tipo_cliente,
+                COUNT(t.id_ticket) AS total
+            FROM incidencias t
+            WHERE DATE_FORMAT(t.fecha_creacion, '%Y-%m-%d') IN (
+                                                                SELECT fecha
+                                                                FROM calendario c
+                                                                WHERE c.ano >= $ano_inicio
+                                                                  AND c.ano <= $ano_fin
+                                                                  AND c.nombre_dia = '{$nombre_dia_semana}'
+                                                            )
+            GROUP BY HOUR(t.fecha_creacion), 
+                     t.servicio_afectado, 
+                     t.tipo_cliente
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
+
+    }
+
+    //  Inserta el valor de un umbral
+    public function insertar_umbral($umbral) {
+
+        $datos = [
+            "nombre_dia"            => $umbral["nombre_dia"],
+            "numero_dia"            => $umbral["numero_dia"],
+            "hora"                  => $umbral["hora"],
+            "servicio_afectado"     => $umbral["servicio_afectado"],
+            "tipo_cliente"          => $umbral["tipo_cliente"],
+            "incidencias_promedio"  => $umbral["incidencias_promedio"]
+        ];
+
+        $query = $this->mysql->insert('umbrales', $datos);
+
+        return $query;
 
     }
 }

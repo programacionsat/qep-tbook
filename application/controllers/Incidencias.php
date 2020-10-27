@@ -30,39 +30,14 @@ class Incidencias extends CI_Controller {
         }
 
 
-
+        //  Empresa = Gran Cuenta y Mediana
+        //  Todo = sin filtros
         $tipos_cliente = [
-            "ggcc"          => "Gran Cuenta",
-            "mediana"       => "Mediana",
-            "micro"         => "Microempresa",
-            "residencial"   => "Residencial",
-            "colaborador"   => "Colaborador",
-            "ambos"         => "Ambos"
+            "empresa"   => "Empresa"
         ];
 
         if ($this->input->post("tipo_cliente") != null) {
-            switch ($this->input->post("tipo_cliente")) {
-                case 'ggcc':
-                    $tipo_cliente = "GRAN CUENTA";
-                    break;
-                case 'mediana':
-                    $tipo_cliente = "MEDIANA";
-                    break;
-                case 'micro':
-                    $tipo_cliente = "MICROEMPRESA";
-                    break;
-                case 'residencial':
-                    $tipo_cliente = "RESIDENCIAL";
-                    break;
-                case 'colaborador':
-                    $tipo_cliente = "COLABORADOR";
-                    break;
-                case 'ambos':
-                    $tipo_cliente = "AMBOS";
-                    break;
-                default:
-                    $tipo_cliente = "todo";
-            }
+            $tipo_cliente = $this->input->post("tipo_cliente");
         } else {
             $tipo_cliente = "todo";
         }
@@ -217,28 +192,7 @@ echo "</pre>";
         $tipo_cliente = $this->input->post("tipo_cliente");
 
         if ($tipo_cliente != null) {
-            switch ($tipo_cliente) {
-                case 'ggcc':
-                    $tipo_cliente = "GRAN CUENTA";
-                    break;
-                case 'mediana':
-                    $tipo_cliente = "MEDIANA";
-                    break;
-                case 'micro':
-                    $tipo_cliente = "MICROEMPRESA";
-                    break;
-                case 'residencial':
-                    $tipo_cliente = "RESIDENCIAL";
-                    break;
-                case 'colaborador':
-                    $tipo_cliente = "COLABORADOR";
-                    break;
-                case 'ambos':
-                    $tipo_cliente = "AMBOS";
-                    break;
-                default:
-                    $tipo_cliente = "todo";
-            }
+            $tipo_cliente = $this->input->post("tipo_cliente");
         } else {
             $tipo_cliente = "todo";
         }
@@ -316,28 +270,7 @@ echo "</pre>";
         $tipo_cliente = $this->input->post("tipo_cliente");
 
         if ($tipo_cliente != null) {
-            switch ($tipo_cliente) {
-                case 'ggcc':
-                    $tipo_cliente = "GRAN CUENTA";
-                    break;
-                case 'mediana':
-                    $tipo_cliente = "MEDIANA";
-                    break;
-                case 'micro':
-                    $tipo_cliente = "MICROEMPRESA";
-                    break;
-                case 'residencial':
-                    $tipo_cliente = "RESIDENCIAL";
-                    break;
-                case 'colaborador':
-                    $tipo_cliente = "COLABORADOR";
-                    break;
-                case 'ambos':
-                    $tipo_cliente = "AMBOS";
-                    break;
-                default:
-                    $tipo_cliente = "todo";
-            }
+            $tipo_cliente = $this->input->post("tipo_cliente");
         } else {
             $tipo_cliente = "todo";
         }
@@ -391,28 +324,7 @@ echo "</pre>";
         $tipo_cliente = $this->input->post("tipo_cliente");
 
         if ($tipo_cliente != null) {
-            switch ($tipo_cliente) {
-                case 'ggcc':
-                    $tipo_cliente = "GRAN CUENTA";
-                    break;
-                case 'mediana':
-                    $tipo_cliente = "MEDIANA";
-                    break;
-                case 'micro':
-                    $tipo_cliente = "MICROEMPRESA";
-                    break;
-                case 'residencial':
-                    $tipo_cliente = "RESIDENCIAL";
-                    break;
-                case 'colaborador':
-                    $tipo_cliente = "COLABORADOR";
-                    break;
-                case 'ambos':
-                    $tipo_cliente = "AMBOS";
-                    break;
-                default:
-                    $tipo_cliente = "todo";
-            }
+            $tipo_cliente = $this->input->post("tipo_cliente");
         } else {
             $tipo_cliente = "todo";
         }
@@ -465,28 +377,7 @@ echo "</pre>";
         $tipo_cliente = $this->input->post("tipo_cliente");
 
         if ($tipo_cliente != null) {
-            switch ($tipo_cliente) {
-                case 'ggcc':
-                    $tipo_cliente = "GRAN CUENTA";
-                    break;
-                case 'mediana':
-                    $tipo_cliente = "MEDIANA";
-                    break;
-                case 'micro':
-                    $tipo_cliente = "MICROEMPRESA";
-                    break;
-                case 'residencial':
-                    $tipo_cliente = "RESIDENCIAL";
-                    break;
-                case 'colaborador':
-                    $tipo_cliente = "COLABORADOR";
-                    break;
-                case 'ambos':
-                    $tipo_cliente = "AMBOS";
-                    break;
-                default:
-                    $tipo_cliente = "todo";
-            }
+            $tipo_cliente = $this->input->post("tipo_cliente");
         } else {
             $tipo_cliente = "todo";
         }
@@ -539,28 +430,7 @@ echo "</pre>";
         $tipo_cliente = $this->input->post("tipo_cliente");
 
         if ($tipo_cliente != null) {
-            switch ($tipo_cliente) {
-                case 'ggcc':
-                    $tipo_cliente = "GRAN CUENTA";
-                    break;
-                case 'mediana':
-                    $tipo_cliente = "MEDIANA";
-                    break;
-                case 'micro':
-                    $tipo_cliente = "MICROEMPRESA";
-                    break;
-                case 'residencial':
-                    $tipo_cliente = "RESIDENCIAL";
-                    break;
-                case 'colaborador':
-                    $tipo_cliente = "COLABORADOR";
-                    break;
-                case 'ambos':
-                    $tipo_cliente = "AMBOS";
-                    break;
-                default:
-                    $tipo_cliente = "todo";
-            }
+            $tipo_cliente = $this->input->post("tipo_cliente");
         } else {
             $tipo_cliente = "todo";
         }
@@ -612,28 +482,7 @@ echo "</pre>";
         $tipo_cliente = $this->input->post("tipo_cliente");
 
         if ($tipo_cliente != null) {
-            switch ($tipo_cliente) {
-                case 'ggcc':
-                    $tipo_cliente = "GRAN CUENTA";
-                    break;
-                case 'mediana':
-                    $tipo_cliente = "MEDIANA";
-                    break;
-                case 'micro':
-                    $tipo_cliente = "MICROEMPRESA";
-                    break;
-                case 'residencial':
-                    $tipo_cliente = "RESIDENCIAL";
-                    break;
-                case 'colaborador':
-                    $tipo_cliente = "COLABORADOR";
-                    break;
-                case 'ambos':
-                    $tipo_cliente = "AMBOS";
-                    break;
-                default:
-                    $tipo_cliente = "todo";
-            }
+            $tipo_cliente = $this->input->post("tipo_cliente");
         } else {
             $tipo_cliente = "todo";
         }
