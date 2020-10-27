@@ -27,6 +27,29 @@ class Incidencias extends CI_Controller {
             $es_historico = false;
         } else {
             $es_historico = true;
+
+            //  Cuando estamos consultando una fecha distinta a la actual,
+            //  al estar separadas las incidencias en dos tablas 
+            //  (incidencias de hoy y el histórico), tenemos que comprobar 
+            //  si existe una tabla temporal del día a consultar ya creada
+            //  o generarla en este momento
+
+            //  Las tablas temporales siguen la siguiente nomenclatura:
+            //  *incidencias_tmp_YYYYMMDD*
+            
+            $nombre_tabla = "incidencias_tmp_" . str_replace("-", "", $fecha_consulta->format("Y-m-d"));
+
+            if (!$existe_tabla = $this->mysql_model->existe_tabla($nombre_tabla)) {
+
+                if (!$crear_tabla = $this->mysql_model->crear_tabla_incidencias_dia($fecha_consulta->format("Y-m-d"))) {
+                    echo "Error SQL al crear tabla";
+                    exit();
+                }
+
+                //echo "Creada la tabla *{$nombre_tabla}*" . PHP_EOL;
+                
+            }
+
         }
 
 

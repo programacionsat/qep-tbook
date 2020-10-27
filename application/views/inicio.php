@@ -56,7 +56,17 @@ foreach ($tipos_cliente as $value => $option) {
                     </form>
                 </div>
             </div>
-
+<?php 
+if ($this->input->post("tipo_cliente") == "empresa") {
+?>
+            <div class="row mt-4">
+                <div class="col">
+                    <h2 class="text-center tipo-cliente">Clientes empresa</h2>
+                </div>
+            </div>
+<?php 
+}
+?>
             <div class="row mt-4">
                 <div class="col">
                     <h3>Servicios</h3>

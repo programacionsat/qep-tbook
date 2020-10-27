@@ -20,16 +20,24 @@ class Tools extends CI_Controller {
         }
     }
 
-    //  Busca y actualiza las incidencias del día de hoy
+    //  Busca y actualiza las incidencias del día de hoy tanto en la tabla de 
+    //  incidencias de hoy como en el histórico
     public function actualizar() {
 
         if($this->input->is_cli_request()) {
             echo "[" . date("Y-m-d H:i:s") . "] Obteniendo incidencias INICIO" . PHP_EOL;
 
-            echo "[" . date("Y-m-d H:i:s") . "] Vaciando tabla de incidencias" . PHP_EOL;
+            echo "[" . date("Y-m-d H:i:s") . "] Eliminando incidencias" . PHP_EOL;
 
+            //  Eliminamos las incidencias actuales en la tabla de hoy 
+            //  y en el histórico.
             if (!$this->mysql_model->eliminar_incidencias_hoy()) {
                 echo "Error al eliminar las incidencias de hoy" . PHP_EOL;
+                exit();
+            }
+
+            if (!$this->mysql_model->eliminar_incidencias(date("Y-m-d"), date("Y-m-d"))) {
+                echo "Error al eliminar las incidencias de hoy en el histórico" . PHP_EOL;
                 exit();
             }
 
@@ -41,8 +49,13 @@ class Tools extends CI_Controller {
             foreach ($data["incidencias"] as $incidencia) {
                 // print_r($reclamacion);
 
-                if (!$this->mysql_model->insertar_incidencia($incidencia)) {
-                    echo "Error insertando incidencia" . PHP_EOL;
+                if (!$this->mysql_model->insertar_incidencia("hoy", $incidencia)) {
+                    echo "Error insertando incidencia en la tabla de incidencias actuales" . PHP_EOL;
+                    exit();
+                }
+
+                if (!$this->mysql_model->insertar_incidencia("historico", $incidencia)) {
+                    echo "Error insertando incidencia en el histórico" . PHP_EOL;
                     exit();
                 }
 
@@ -83,7 +96,7 @@ class Tools extends CI_Controller {
             foreach ($data["incidencias"] as $incidencia) {
                 // print_r($incidencia);
 
-                $this->mysql_model->insertar_incidencia($incidencia);
+                $this->mysql_model->insertar_incidencia("historico", $incidencia);
             }
 
             //print_r($data);
@@ -222,6 +235,25 @@ class Tools extends CI_Controller {
                 echo "Error SQL insertando umbral" . PHP_EOL;
                 exit();
             }
+        }
+
+    }
+
+    public function crear_tabla($fecha) {
+
+        $nombre_tabla = "incidencias_tmp_" . str_replace("-", "", $fecha);
+
+        if (!$existe_tabla = $this->mysql_model->existe_tabla($nombre_tabla)) {
+
+            if (!$crear_tabla = $this->mysql_model->crear_tabla_incidencias_dia($fecha)) {
+                echo "Error SQL al crear tabla";
+                exit();
+            }
+
+            echo "Creada la tabla *{$nombre_tabla}*" . PHP_EOL;
+            
+        } else {
+            echo "La tabla ya existe" . PHP_EOL;
         }
 
     }

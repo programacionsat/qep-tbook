@@ -3,6 +3,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class MySQL_model extends CI_Model {
 
+    private $tabla_hoy = "incidencias_hoy";
+    private $tabla_historico = "incidencias_historico";
+
     public function __construct() {
         parent::__construct();
         $this->mysql = $this->load->database("mysql", TRUE);
@@ -26,12 +29,10 @@ class MySQL_model extends CI_Model {
 
         date_default_timezone_set("Europe/Madrid");
 
-        $fecha_hoy = new DateTime();
-
         $sql = "
 
             DELETE 
-            FROM incidencias
+            FROM $this->tabla_hoy
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d')  = CURDATE()
 
         ";
@@ -43,17 +44,16 @@ class MySQL_model extends CI_Model {
 
     }
 
-    //  Elimina las incidencias de hoy
+    //  Elimina las incidencias del histórico de un determinado 
+    //  rango de fechas
     public function eliminar_incidencias($fecha_desde, $fecha_hasta) {
 
         date_default_timezone_set("Europe/Madrid");
 
-        $fecha_hoy = new DateTime();
-
         $sql = "
 
             DELETE 
-            FROM incidencias
+            FROM incidencias_historico
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d')  >= '{$fecha_desde}'
               AND DATE_FORMAT(fecha_creacion, '%Y-%m-%d')  <= '{$fecha_hasta}'
 
@@ -66,7 +66,16 @@ class MySQL_model extends CI_Model {
 
     }
 
-    public function insertar_incidencia($incidencia) {
+    public function insertar_incidencia($tabla, $incidencia) {
+
+        switch ($tabla) {
+            case 'hoy':
+                $tabla = "incidencias_hoy";
+                break;
+            case 'historico':
+                $tabla = "incidencias_historico";
+                break;
+        }
 
         $datos = [
             "id_ticket"         => $incidencia["ID_TICKET"],
@@ -81,7 +90,7 @@ class MySQL_model extends CI_Model {
             "tipo_cliente"      => $incidencia["TIPO_CLIENTE"]
         ];
 
-        $query = $this->mysql->insert('incidencias', $datos);
+        $query = $this->mysql->insert($tabla, $datos);
 
         return $query;
 
@@ -128,6 +137,14 @@ class MySQL_model extends CI_Model {
     //  $tipo_cliente = Empresa | Todo
     public function obtener_incidencias_sin_servicio_hora($fecha, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -141,7 +158,7 @@ class MySQL_model extends CI_Model {
 
             SELECT COUNT(id_ticket) as total_incidencias,
                    HOUR(fecha_creacion) as hora_incidencia
-            FROM incidencias
+            FROM $tabla_incidencias
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND servicio_afectado IS NULL
               $filtro_tipo_cliente
@@ -158,6 +175,14 @@ class MySQL_model extends CI_Model {
 
     public function obtener_incidencias_otros_servicios_hora($filtro_servicios, $fecha, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -171,7 +196,7 @@ class MySQL_model extends CI_Model {
 
             SELECT COUNT(id_ticket) as total_incidencias,
                    HOUR(fecha_creacion) as hora_incidencia
-            FROM incidencias
+            FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND servicio_afectado NOT IN {$filtro_servicios}
               $filtro_tipo_cliente
@@ -189,6 +214,14 @@ class MySQL_model extends CI_Model {
     //  Obtener el conteo de incidencias por servicio
     public function obtener_incidencias_servicio_hora($servicio, $fecha, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -202,7 +235,7 @@ class MySQL_model extends CI_Model {
 
             SELECT COUNT(id_ticket) as total_incidencias,
                    HOUR(fecha_creacion) as hora_incidencia
-            FROM incidencias
+            FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND servicio_afectado = '{$servicio}'
               $filtro_tipo_cliente
@@ -229,7 +262,7 @@ class MySQL_model extends CI_Model {
 
             SELECT COUNT(id_ticket) as total_incidencias,
                    servicio_afectado
-            FROM incidencias
+            FROM $this->tabla_hoy 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND servicio_afectado = '{$servicio}'
               $filtro_tipo_cliente
@@ -293,11 +326,19 @@ class MySQL_model extends CI_Model {
 
     public function obtener_incidencias_hora($fecha) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         $sql = "
 
             SELECT COUNT(id_ticket) as total_incidencias,
                    HOUR(fecha_creacion) as hora_incidencia
-            FROM incidencias
+            FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
             GROUP BY HOUR(fecha_creacion)
             ORDER BY HOUR(fecha_creacion)
@@ -313,6 +354,14 @@ class MySQL_model extends CI_Model {
     //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
     public function obtener_listado_incidencias_servicio_hora($servicio, $fecha, $hora, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -325,7 +374,7 @@ class MySQL_model extends CI_Model {
         $sql = "
 
             SELECT *
-            FROM incidencias
+            FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND HOUR(fecha_creacion) = {$hora}
               AND servicio_afectado = '{$servicio}'
@@ -342,6 +391,14 @@ class MySQL_model extends CI_Model {
     //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
     public function obtener_listado_incidencias_sin_servicio_hora($fecha, $hora, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -354,7 +411,7 @@ class MySQL_model extends CI_Model {
         $sql = "
 
             SELECT *
-            FROM incidencias
+            FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND HOUR(fecha_creacion) = {$hora}
               AND servicio_afectado IS NULL
@@ -371,6 +428,14 @@ class MySQL_model extends CI_Model {
     //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
     public function obtener_listado_incidencias_otros_servicios_hora($filtro_servicios, $fecha, $hora, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -383,7 +448,7 @@ class MySQL_model extends CI_Model {
         $sql = "
 
             SELECT *
-            FROM incidencias
+            FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND HOUR(fecha_creacion) = {$hora}
               AND servicio_afectado NOT IN {$filtro_servicios}
@@ -401,6 +466,14 @@ class MySQL_model extends CI_Model {
     //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
     public function obtener_listado_incidencias_servicio($servicio, $fecha, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -413,7 +486,7 @@ class MySQL_model extends CI_Model {
         $sql = "
 
             SELECT *
-            FROM incidencias
+            FROM $tabla_incidencias
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND servicio_afectado = '{$servicio}'
               $filtro_tipo_cliente
@@ -429,6 +502,14 @@ class MySQL_model extends CI_Model {
     //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
     public function obtener_listado_incidencias_sin_servicio($fecha, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -441,7 +522,7 @@ class MySQL_model extends CI_Model {
         $sql = "
 
             SELECT *
-            FROM incidencias
+            FROM $tabla_incidencias
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND servicio_afectado IS NULL
               $filtro_tipo_cliente
@@ -457,6 +538,14 @@ class MySQL_model extends CI_Model {
     //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
     public function obtener_listado_incidencias_otros_servicios($filtro_servicios, $fecha, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -469,7 +558,7 @@ class MySQL_model extends CI_Model {
         $sql = "
 
             SELECT *
-            FROM incidencias
+            FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND servicio_afectado NOT IN {$filtro_servicios}
               $filtro_tipo_cliente
@@ -538,6 +627,14 @@ class MySQL_model extends CI_Model {
     //  Devuelve un listado de los NTT de una determinada fecha
     public function obtener_ntts($fecha, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -551,7 +648,7 @@ class MySQL_model extends CI_Model {
 
             SELECT t.ntt as ntt, 
                    COUNT(t.id_ticket) AS num_tickets_correlados
-            FROM incidencias t
+            FROM $tabla_incidencias t
             WHERE DATE_FORMAT(t.fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND t.ntt IS NOT NULL
               $filtro_tipo_cliente
@@ -568,6 +665,14 @@ class MySQL_model extends CI_Model {
 
     public function obtener_ntts_hora($fecha, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -582,7 +687,7 @@ class MySQL_model extends CI_Model {
             SELECT t.ntt as ntt, 
                    COUNT(t.id_ticket) AS num_tickets_correlados,
                    HOUR(t.fecha_creacion) AS hora_creacion_ticket
-            FROM incidencias t
+            FROM $tabla_incidencias t
             WHERE DATE_FORMAT(t.fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND t.ntt IS NOT NULL
               $filtro_tipo_cliente
@@ -601,6 +706,14 @@ class MySQL_model extends CI_Model {
     //  Devuelve información de un ticket de red
     public function obtener_info_ntt($ntt, $fecha, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -615,7 +728,7 @@ class MySQL_model extends CI_Model {
             SELECT servicio_afectado as servicio,
                    MID(t.nodo, 1, 2) as zona,
                    COUNT(id_ticket) as tickets_correlados
-            FROM incidencias t
+            FROM $tabla_incidencias t
             WHERE DATE_FORMAT(t.fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND t.ntt = {$ntt}
               $filtro_tipo_cliente
@@ -636,6 +749,14 @@ class MySQL_model extends CI_Model {
 
     public function obtener_listado_incidencias_correladas_hora($ntt, $fecha, $hora, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -648,7 +769,7 @@ class MySQL_model extends CI_Model {
         $sql = "
 
             SELECT *
-            FROM incidencias
+            FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND HOUR(fecha_creacion) = {$hora}
               AND ntt = {$ntt}
@@ -664,6 +785,14 @@ class MySQL_model extends CI_Model {
 
     public function obtener_listado_incidencias_zonas_hora($zona, $fecha, $hora, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -676,7 +805,7 @@ class MySQL_model extends CI_Model {
         $sql = "
 
             SELECT *
-            FROM incidencias
+            FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND HOUR(fecha_creacion) = {$hora}
               AND MID(nodo, 1, 2) = '{$zona}'
@@ -692,6 +821,14 @@ class MySQL_model extends CI_Model {
 
     public function obtener_listado_incidencias_zonas($zona, $fecha, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -704,7 +841,7 @@ class MySQL_model extends CI_Model {
         $sql = "
 
             SELECT *
-            FROM incidencias
+            FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND MID(nodo, 1, 2) = '{$zona}'
               $filtro_tipo_cliente
@@ -719,6 +856,14 @@ class MySQL_model extends CI_Model {
 
     public function obtener_listado_incidencias_correladas($ntt, $fecha, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -731,7 +876,7 @@ class MySQL_model extends CI_Model {
         $sql = "
 
             SELECT *
-            FROM incidencias
+            FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND ntt = {$ntt}
               $filtro_tipo_cliente
@@ -780,6 +925,14 @@ class MySQL_model extends CI_Model {
 
     public function obtener_incidencias_zona_hora($fecha, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -794,7 +947,7 @@ class MySQL_model extends CI_Model {
             SELECT MID(nodo, 1, 2) AS zona,
                    COUNT(id_ticket) as total_incidencias,
                    HOUR(fecha_creacion) as hora_incidencia
-            FROM incidencias
+            FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               $filtro_tipo_cliente
             GROUP BY MID(nodo, 1, 2), HOUR(fecha_creacion)
@@ -891,6 +1044,42 @@ class MySQL_model extends CI_Model {
         $query = $this->mysql->insert('umbrales', $datos);
 
         return $query;
+
+    }
+
+    //  Crea una tabla con las incidencias de una determinada fecha
+    public function crear_tabla_incidencias_dia($fecha) {
+
+        $fecha_nombre = str_replace("-", "", $fecha);
+
+        $sql = "
+            CREATE TABLE incidencias_tmp_{$fecha_nombre} AS
+            SELECT *
+            FROM incidencias_historico
+            WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query; 
+
+    }
+
+    public function existe_tabla($nombre_tabla) {
+
+        $sql = "
+
+            SHOW TABLES LIKE '{$nombre_tabla}'
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        if ($query->conn_id->affected_rows == 1) {
+            return true;
+        } else {
+            return false;
+        }
 
     }
 }
