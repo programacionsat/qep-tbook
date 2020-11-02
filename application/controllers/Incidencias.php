@@ -99,18 +99,26 @@ echo "</pre>";
         }
 
         $incidencias_servicio = [];
+        //  Obtener umbrales por servicio y hora
+        $umbrales_servicio = [];
+        
         foreach ($listado_servicios_mostrar_web as $servicio => $servicio_web) {
+
+            $numero_dia_semana = $fecha_consulta->format("N");
 
             switch ($servicio) {
                 case 'sin':
                     $incidencias_servicio[$servicio] = $this->mysql_model->obtener_incidencias_sin_servicio_hora($fecha_consulta->format("Y-m-d"), $tipo_cliente);
+                    $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_sin_servicio_hora($numero_dia_semana, $tipo_cliente);
                     break;
                 case 'otros':
                     $filtro_servicios = "('" . implode("', '", array_keys($listado_servicios_reales_a_mostrar)) . "')";
                     $incidencias_servicio[$servicio] = $this->mysql_model->obtener_incidencias_otros_servicios_hora($filtro_servicios, $fecha_consulta->format("Y-m-d"), $tipo_cliente);
+                    $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_otros_servicios_hora($filtro_servicios, $numero_dia_semana, $tipo_cliente);
                     break;
                 default:
                     $incidencias_servicio[$servicio] = $this->mysql_model->obtener_incidencias_servicio_hora($servicio, $fecha_consulta->format("Y-m-d"), $tipo_cliente);
+                    $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_servicio_hora($servicio, $numero_dia_semana, $tipo_cliente);
                     break;
             }
             
@@ -120,6 +128,14 @@ echo "</pre>";
         foreach ($incidencias_servicio as $servicio => $datos) {
             foreach ($datos as $dato) {
                 $datos_incidencias_servicio[$servicio][$dato["hora_incidencia"]] = $dato["total_incidencias"];
+            }
+        }
+
+        //  Buscamos los umbrales de cada servicio y hora
+        $datos_umbrales_servicio = [];
+        foreach ($umbrales_servicio as $servicio => $datos) {
+            foreach ($datos as $dato) {
+                $datos_umbrales_servicio[$servicio][$dato["hora"]] = $dato["incidencias_promedio"];
             }
         }
 
@@ -190,6 +206,7 @@ echo "</pre>";
         $datos["listado_servicios_mostrar_web"] = $listado_servicios_mostrar_web;
         $datos["incidencias_hora"] = $datos_incidencias_hora;
         $datos["incidencias_total"] = $datos_incidencias_total;
+        $datos["umbrales"] = $datos_umbrales_servicio;
         $datos["servicios"] = $datos_incidencias_servicio;
         $datos["servicios_total"] = $datos_incidencias_servicio_total;
         $datos["listado_zonas"] = $listado_zonas;

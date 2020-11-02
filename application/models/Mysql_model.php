@@ -24,7 +24,7 @@ class MySQL_model extends CI_Model {
         $this->mysql->insert("usuarios_apps_log", $datos_visita);
     }
 
-    //  Elimina las incidencias de hoy
+    //  Elimina las incidencias de la tabla de incidencias de hoy
     public function eliminar_incidencias_hoy() {
 
         date_default_timezone_set("Europe/Madrid");
@@ -33,7 +33,7 @@ class MySQL_model extends CI_Model {
 
             DELETE 
             FROM $this->tabla_hoy
-            WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d')  = CURDATE()
+            -- WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d')  = CURDATE()
 
         ";
 
@@ -87,7 +87,8 @@ class MySQL_model extends CI_Model {
             "nodo"              => $incidencia["NODO"],
             "ntt"               => $incidencia["NTT"],
             "usuario_creador"   => $incidencia["USUARIO_CREADOR"],
-            "tipo_cliente"      => $incidencia["TIPO_CLIENTE"]
+            "tipo_cliente"      => $incidencia["TIPO_CLIENTE"],
+            "tipo_peticion"     => $incidencia["TIPO_PETICION"]
         ];
 
         $query = $this->mysql->insert($tabla, $datos);
@@ -1080,6 +1081,94 @@ class MySQL_model extends CI_Model {
         } else {
             return false;
         }
+
+    }
+
+    public function obtener_umbral_servicio_hora($servicio, $dia, $tipo_cliente) {
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT hora, 
+                   SUM(incidencias_promedio) AS incidencias_promedio
+            FROM umbrales
+            WHERE numero_dia = {$dia}
+              AND servicio_afectado = '{$servicio}'
+              $filtro_tipo_cliente
+            GROUP BY hora
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
+
+    }
+
+    public function obtener_umbral_sin_servicio_hora($dia, $tipo_cliente) {
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT hora, 
+                   SUM(incidencias_promedio) AS incidencias_promedio
+            FROM umbrales
+            WHERE numero_dia = {$dia}
+              AND servicio_afectado IS NULL
+              $filtro_tipo_cliente
+            GROUP BY hora
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
+
+    }
+
+
+    public function obtener_umbral_otros_servicios_hora($filtro_servicios, $dia, $tipo_cliente) {
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT hora, 
+                   SUM(incidencias_promedio) AS incidencias_promedio
+            FROM umbrales
+            WHERE numero_dia = {$dia}
+              AND servicio_afectado NOT IN {$filtro_servicios}
+              $filtro_tipo_cliente
+            GROUP BY hora
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
 
     }
 }

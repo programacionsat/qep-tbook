@@ -15,20 +15,22 @@ class Tbook_model extends CI_Model {
             SELECT
                 r.request_id                                                            AS id_ticket,
                 cad.external_id                                                         AS id_externo,
-                to_char(r.request_date, 'yyyy-mm-dd hh24:mi:ss')                        AS fecha_creacion,    
+                to_char(r.request_date, 'yyyy-mm-dd hh24:mi:ss')                        AS fecha_creacion,
                 substr(cad.service_type, instr(cad.service_type, '-') + 2)              AS servicio_afectado,
                 func.functionality_name                                                 AS funcionalidad,
                 syn.syntom_name                                                         AS sintoma,
-                cad.nodo                                                                AS nodo,    
+                cad.nodo                                                                AS nodo,
                 cad.correlated_ntt                                                      AS ntt,
                 r.user_                                                                 AS usuario_creador,
-                cad.customer_type                                                       AS tipo_cliente
+                cad.customer_type                                                       AS tipo_cliente,
+                rtype.rtype_name                                                        AS tipo_peticion
             FROM
                      tbook.request r
-                INNER JOIN tbook.ctt_additional_data     cad ON r.request_id = cad.request_id
-                LEFT JOIN tbook.master_functionality    func ON cad.functionality_id = func.functionality_id
-                LEFT JOIN tbook.master_syntom           syn ON cad.syntom_id = syn.syntom_id
-                INNER JOIN tbook.master_ctt_situation    sit ON r.situation_id = sit.situation_id
+                INNER JOIN tbook.ctt_additional_data        cad ON r.request_id = cad.request_id
+                LEFT JOIN tbook.master_functionality       func ON cad.functionality_id = func.functionality_id
+                LEFT JOIN tbook.master_syntom              syn ON cad.syntom_id = syn.syntom_id
+                INNER JOIN tbook.master_ctt_situation       sit ON r.situation_id = sit.situation_id
+                INNER JOIN tbook.master_ctt_request_type    rtype ON r.rtype_id = rtype.rtype_id
             WHERE
                     r.request_date >= trunc(sysdate)
                 AND r.request_date < trunc(sysdate + 1)
@@ -95,13 +97,15 @@ class Tbook_model extends CI_Model {
                 cad.nodo                                                                AS nodo,    
                 cad.correlated_ntt                                                      AS ntt,
                 r.user_                                                                 AS usuario_creador,
-                cad.customer_type                                                       AS tipo_cliente
+                cad.customer_type                                                       AS tipo_cliente,
+                rtype.rtype_name                                                        AS tipo_peticion
             FROM
                      tbook.request r
                 INNER JOIN tbook.ctt_additional_data     cad ON r.request_id = cad.request_id
                 LEFT JOIN tbook.master_functionality    func ON cad.functionality_id = func.functionality_id
                 LEFT JOIN tbook.master_syntom           syn ON cad.syntom_id = syn.syntom_id
                 INNER JOIN tbook.master_ctt_situation    sit ON r.situation_id = sit.situation_id
+                INNER JOIN tbook.master_ctt_request_type    rtype ON r.rtype_id = rtype.rtype_id
             WHERE
                     r.request_date >= TO_DATE('{$desde}', 'yyyy-mm-dd')
                 AND r.request_date < TO_DATE('{$hasta}', 'yyyy-mm-dd')
