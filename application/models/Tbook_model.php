@@ -22,6 +22,7 @@ class Tbook_model extends CI_Model {
                 cad.nodo                                                                AS nodo,
                 cad.correlated_ntt                                                      AS ntt,
                 r.user_                                                                 AS usuario_creador,
+                cad.customer_name                                                       AS nombre_cliente,
                 cad.customer_type                                                       AS tipo_cliente,
                 rtype.rtype_name                                                        AS tipo_peticion
             FROM
@@ -60,6 +61,7 @@ class Tbook_model extends CI_Model {
                 cad.nodo                                                                AS nodo,    
                 cad.correlated_ntt                                                      AS ntt,
                 r.user_                                                                 AS usuario_creador,
+                cad.customer_name                                                       AS nombre_cliente,
                 cad.customer_type                                                       AS tipo_cliente
             FROM
                      tbook.request r
@@ -97,6 +99,7 @@ class Tbook_model extends CI_Model {
                 cad.nodo                                                                AS nodo,    
                 cad.correlated_ntt                                                      AS ntt,
                 r.user_                                                                 AS usuario_creador,
+                cad.customer_name                                                       AS nombre_cliente,
                 cad.customer_type                                                       AS tipo_cliente,
                 rtype.rtype_name                                                        AS tipo_peticion
             FROM

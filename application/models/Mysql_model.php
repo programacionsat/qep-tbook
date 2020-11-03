@@ -87,6 +87,7 @@ class MySQL_model extends CI_Model {
             "nodo"              => $incidencia["NODO"],
             "ntt"               => $incidencia["NTT"],
             "usuario_creador"   => $incidencia["USUARIO_CREADOR"],
+            "nombre_cliente"    => $incidencia["NOMBRE_CLIENTE"],
             "tipo_cliente"      => $incidencia["TIPO_CLIENTE"],
             "tipo_peticion"     => $incidencia["TIPO_PETICION"]
         ];

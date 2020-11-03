@@ -65,6 +65,16 @@ footer a:hover {
     color: white;
 }
 
+/*
+    Aumento del tamaño de la ventana modal para
+    pantallas grandes
+*/
+@media (min-width: 992px) {
+  .modal-dialog {
+    max-width: 80%;
+  }
+}
+
 .tabla-incidencias {
     border-collapse: separate;
     border-spacing: 5px;

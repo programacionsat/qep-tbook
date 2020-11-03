@@ -227,7 +227,7 @@ echo "</pre>";
         
     }
 
-    public function servicio_fecha_hora() {
+    public function servicio_fecha_hora() { 
 
         $tipo_cliente = $this->input->post("tipo_cliente");
 
@@ -276,6 +276,7 @@ echo "</pre>";
                         <th>Nodo</th>
                         <th>NTT</th>
                         <th>Usuario</th>
+                        <th>Cliente</th>
                         <th>Tipo cliente</th>
                     </tr>
                 </thead>
@@ -293,6 +294,7 @@ echo "</pre>";
                         <td>{$incidencia["nodo"]}</td>
                         <td>{$incidencia["ntt"]}</td>
                         <td>{$incidencia["usuario_creador"]}</td>
+                        <td>{$incidencia["nombre_cliente"]}</td>
                         <td>{$incidencia["tipo_cliente"]}</td>
                     </tr>" . PHP_EOL;
         }
@@ -330,6 +332,7 @@ echo "</pre>";
                         <th>Nodo</th>
                         <th>NTT</th>
                         <th>Usuario</th>
+                        <th>Cliente</th>
                         <th>Tipo cliente</th>
                     </tr>
                 </thead>
@@ -347,6 +350,7 @@ echo "</pre>";
                         <td>{$incidencia["nodo"]}</td>
                         <td>{$incidencia["ntt"]}</td>
                         <td>{$incidencia["usuario_creador"]}</td>
+                        <td>{$incidencia["nombre_cliente"]}</td>
                         <td>{$incidencia["tipo_cliente"]}</td>
                     </tr>" . PHP_EOL;
         }
@@ -384,6 +388,7 @@ echo "</pre>";
                         <th>Nodo</th>
                         <th>NTT</th>
                         <th>Usuario</th>
+                        <th>Cliente</th>
                         <th>Tipo cliente</th>
                     </tr>
                 </thead>
@@ -401,6 +406,7 @@ echo "</pre>";
                         <td>{$incidencia["nodo"]}</td>
                         <td>{$incidencia["ntt"]}</td>
                         <td>{$incidencia["usuario_creador"]}</td>
+                        <td>{$incidencia["nombre_cliente"]}</td>
                         <td>{$incidencia["tipo_cliente"]}</td>
                     </tr>" . PHP_EOL;
         }
@@ -437,6 +443,7 @@ echo "</pre>";
                         <th>Nodo</th>
                         <th>NTT</th>
                         <th>Usuario</th>
+                        <th>Cliente</th>
                         <th>Tipo cliente</th>
                     </tr>
                 </thead>
@@ -454,6 +461,7 @@ echo "</pre>";
                         <td>{$incidencia["nodo"]}</td>
                         <td>{$incidencia["ntt"]}</td>
                         <td>{$incidencia["usuario_creador"]}</td>
+                        <td>{$incidencia["nombre_cliente"]}</td>
                         <td>{$incidencia["tipo_cliente"]}</td>
                     </tr>" . PHP_EOL;
         }
@@ -490,6 +498,7 @@ echo "</pre>";
                         <th>Nodo</th>
                         <th>NTT</th>
                         <th>Usuario</th>
+                        <th>Cliente</th>
                         <th>Tipo cliente</th>
                     </tr>
                 </thead>
@@ -507,6 +516,7 @@ echo "</pre>";
                         <td>{$incidencia["nodo"]}</td>
                         <td>{$incidencia["ntt"]}</td>
                         <td>{$incidencia["usuario_creador"]}</td>
+                        <td>{$incidencia["nombre_cliente"]}</td>
                         <td>{$incidencia["tipo_cliente"]}</td>
                     </tr>" . PHP_EOL;
         }
@@ -565,6 +575,7 @@ echo "</pre>";
                         <th>Nodo</th>
                         <th>NTT</th>
                         <th>Usuario</th>
+                        <th>Cliente</th>
                         <th>Tipo cliente</th>
                     </tr>
                 </thead>
@@ -582,6 +593,7 @@ echo "</pre>";
                         <td>{$incidencia["nodo"]}</td>
                         <td>{$incidencia["ntt"]}</td>
                         <td>{$incidencia["usuario_creador"]}</td>
+                        <td>{$incidencia["nombre_cliente"]}</td>
                         <td>{$incidencia["tipo_cliente"]}</td>
                     </tr>" . PHP_EOL;
         }
