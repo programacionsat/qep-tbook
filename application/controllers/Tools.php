@@ -20,8 +20,8 @@ class Tools extends CI_Controller {
         }
     }
 
-    //  Busca y actualiza las incidencias del día de hoy tanto en la tabla de 
-    //  incidencias de hoy como en el histórico
+    //  Busca y actualiza las incidencias del día de **hoy** tanto en la tabla 
+    //  de incidencias de hoy como en el histórico
     public function actualizar() {
 
         if($this->input->is_cli_request()) {
@@ -61,6 +61,99 @@ class Tools extends CI_Controller {
 
             }
 
+
+            //  Buscar soportes y actualizar salida
+            echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Soporte*" . PHP_EOL;
+            if (!$this->mysql_model->actualizar_salida_soporte("hoy", date("Y-m-d"))) {
+                echo "Error actualizando salida *Soporte*" . PHP_EOL;
+                exit();
+            }
+
+            if (!$this->mysql_model->actualizar_salida_soporte("historico", date("Y-m-d"))) {
+                echo "Error actualizando salida *Soporte*" . PHP_EOL;
+                exit();
+            }
+
+
+            //  Actualizar salida *Correlado a NTT*
+            echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Correlado a NTT*" . PHP_EOL;
+            if (!$this->mysql_model->actualizar_salida_correlado_ntt("hoy", date("Y-m-d"))) {
+                echo "Error actualizando salida *Correlado a NTT*" . PHP_EOL;
+                exit();
+            }
+
+            if (!$this->mysql_model->actualizar_salida_correlado_ntt("historico", date("Y-m-d"))) {
+                echo "Error actualizando salida *Correlado a NTT*" . PHP_EOL;
+                exit();
+            }
+
+
+            //  Actualizar salida *Visita*
+            echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Visita*" . PHP_EOL;
+            $incidencias_hoy = $this->mysql_model->obtener_incidencias_hoy();
+
+            $tickets_visita = [];
+            foreach ($incidencias_hoy as $incidencia) {
+                $hay_visita = $this->tbook_model->obtener_salida_visita($incidencia["id_ticket"]);
+
+                if (count($hay_visita) != 0) {
+                    $tickets_visita[] = $incidencia["id_ticket"];
+                }
+            }
+
+            foreach ($tickets_visita as $ticket) {
+
+                if (!$this->mysql_model->actualizar_salida_visita("hoy", $ticket)) {
+                    echo "Error actualizando salida *Visita*" . PHP_EOL;
+                    exit();
+                }
+
+                if (!$this->mysql_model->actualizar_salida_visita("historico", $ticket)) {
+                    echo "Error actualizando salida *Visita*" . PHP_EOL;
+                    exit();
+                }
+            }
+
+
+            //  Actualizar salida *Escalado a O&M*
+            echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Escalado a O&M*" . PHP_EOL;
+
+            $tickets_escalados_oym = [];
+            foreach ($incidencias_hoy as $incidencia) {
+                $hay_escalados_oym = $this->tbook_model->obtener_salida_oym($incidencia["id_ticket"]);
+
+                if (count($hay_escalados_oym) != 0) {
+                    $tickets_escalados_oym[] = $incidencia["id_ticket"];
+                }
+            }
+
+            foreach ($tickets_escalados_oym as $ticket) {
+
+                if (!$this->mysql_model->actualizar_salida_oym("hoy", $ticket)) {
+                    echo "Error actualizando salida *Escalado a O&M*" . PHP_EOL;
+                    exit();
+                }
+
+                if (!$this->mysql_model->actualizar_salida_oym("historico", $ticket)) {
+                    echo "Error actualizando salida *Escalado a O&M*" . PHP_EOL;
+                    exit();
+                }
+            }
+
+
+            //  Actualizar salida *Otros*
+            echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Otros*" . PHP_EOL;
+            if (!$this->mysql_model->actualizar_salida_otros("hoy", date("Y-m-d"))) {
+                echo "Error actualizando salida *Otros*" . PHP_EOL;
+                exit();
+            }
+
+            if (!$this->mysql_model->actualizar_salida_otros("historico", date("Y-m-d"))) {
+                echo "Error actualizando salida *Otros*" . PHP_EOL;
+                exit();
+            }
+
+
             //  Actualizamos la fecha de última actualización
             $this->mysql_model->actualizar_fecha();
 
@@ -77,6 +170,9 @@ class Tools extends CI_Controller {
     //  Busca las incidencias entre un rango de fechas, elimina las que 
     //  pudiese haber en base de datos en ese tiempo y las inserta
     //  [!] "fecha_hasta" no se incluye
+
+    //  ToDo
+    //      [] Añadir código para obtener las salidas (¿¿o crear un método solo para ello??)
     public function obtener_incidencias($fecha_desde, $fecha_hasta) {
 
         if($this->input->is_cli_request()) {
@@ -90,13 +186,104 @@ class Tools extends CI_Controller {
             }
 
             echo "[" . date("Y-m-d H:i:s") . "] Buscando incidencias" . PHP_EOL;
+            $incidencias = $this->tbook_model->obtener_incidencias($fecha_desde, $fecha_hasta);
 
-            $data["incidencias"] = $this->tbook_model->obtener_incidencias($fecha_desde, $fecha_hasta);
-
-            foreach ($data["incidencias"] as $incidencia) {
+            echo "[" . date("Y-m-d H:i:s") . "] Insertando incidencias" . PHP_EOL;
+            foreach ($incidencias as $incidencia) {
                 // print_r($incidencia);
 
                 $this->mysql_model->insertar_incidencia("historico", $incidencia);
+            }
+
+
+            //  Buscar soportes y actualizar salida
+            //  ---------------------------------------------------------------
+            echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Soporte*" . PHP_EOL;
+            if (!$this->mysql_model->actualizar_salida_soporte("historico", date("Y-m-d"))) {
+                echo "Error actualizando salida *Soporte*" . PHP_EOL;
+                exit();
+            }
+
+
+            //  Actualizar salida *Correlado a NTT*
+            //  ---------------------------------------------------------------
+            echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Correlado a NTT*" . PHP_EOL;
+            if (!$this->mysql_model->actualizar_salida_correlado_ntt("historico", date("Y-m-d"))) {
+                echo "Error actualizando salida *Correlado a NTT*" . PHP_EOL;
+                exit();
+            }
+
+
+            //  Actualizar salida *Visita y O&M*
+            //  ---------------------------------------------------------------
+            echo "[" . date("Y-m-d H:i:s") . "] Buscando salida *Visita* y *Escalado a O&M*" . PHP_EOL;
+
+            $tickets_visita = [];
+            $tickets_escalados_oym = [];
+
+            // DEBUG
+            //echo count($incidencias) . " incidencias" . PHP_EOL;
+
+            //$num_incidencias = 1;
+            foreach ($incidencias as $incidencia) {
+
+                //echo "[{$num_incidencias}] Ticket: {$incidencia["ID_TICKET"]}" . PHP_EOL;
+
+                $hay_visita = $this->tbook_model->obtener_salida_visita($incidencia["ID_TICKET"]);
+
+                $hay_escalados_oym = $this->tbook_model->obtener_salida_oym($incidencia["ID_TICKET"]);
+
+                if (count($hay_escalados_oym) != 0) {
+                    $tickets_escalados_oym[] = $incidencia["ID_TICKET"];
+                }
+
+                if (count($hay_visita) != 0) {
+                    $tickets_visita[] = $incidencia["ID_TICKET"];
+                }
+
+                //$num_incidencias++;
+            }
+
+            // DEBUG
+            echo count($incidencias) . " incidencias" . PHP_EOL;
+
+            //  Actualizar salida *Visita*
+            //  ---------------------------------------------------------------
+            echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Visita*" . PHP_EOL;
+            foreach ($tickets_visita as $ticket) {
+
+                if (!$this->mysql_model->actualizar_salida_visita("historico", $ticket)) {
+                    echo "Error actualizando salida *Visita*" . PHP_EOL;
+                    exit();
+                }
+            }
+
+
+            //  Actualizar salida *Escalado a O&M*
+            //  ---------------------------------------------------------------
+            echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Escalado a O&M*" . PHP_EOL;
+            foreach ($tickets_escalados_oym as $ticket) {
+                /*
+                if (!$this->mysql_model->actualizar_salida_oym("hoy", $ticket)) {
+                    echo "Error actualizando salida *Escalado a O&M*" . PHP_EOL;
+                    exit();
+                }
+                */
+
+                if (!$this->mysql_model->actualizar_salida_oym("historico", $ticket)) {
+                    echo "Error actualizando salida *Escalado a O&M*" . PHP_EOL;
+                    exit();
+                }
+            }
+
+
+            //  Actualizar salida *Otros*
+            //  ---------------------------------------------------------------
+            echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Otros*" . PHP_EOL;
+
+            if (!$this->mysql_model->actualizar_salida_otros("historico", date("Y-m-d"))) {
+                echo "Error actualizando salida *Otros*" . PHP_EOL;
+                exit();
             }
 
             //print_r($data);

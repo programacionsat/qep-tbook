@@ -173,6 +173,105 @@ foreach ($listado_servicios_mostrar_web as $servicio_afectado => $servicio_afect
             <!--                                 SALIDAS                                 -->
             <!-- ======================================================================= -->
 
+            <div class="row mt-4">
+                <div class="col">
+                    <h3>Salidas</h3>
+<?php 
+if (count($listado_incidencias_salida_hora) != 0) {
+?>
+                    <table class="tabla-incidencias">
+                        <thead>
+                            <tr>
+                                <th></th>
+<?php
+$hora_actual = $fecha_actual->format("G");
+if ($es_historico) {
+    $hora_inicio = 10;
+    $hora_fin = 23;
+} else {
+    if ($hora_actual >= 7) {
+        $hora_inicio = $hora_actual - 7;
+    } else {
+        $hora_inicio = 0;
+    }
+    $hora_fin = $hora_actual;
+}
+
+for ($h = $hora_inicio; $h <= $hora_fin; $h++) {
+    echo "
+                                <th class=\"celda-hora\">$h:00</th>" . PHP_EOL;
+}
+?>
+                                <th class="celda-incidencias bg-dark text-white">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+<?php
+foreach ($listado_salidas as $salida) {
+
+    //  Versión con enlace al servicio:
+    /*
+    echo "
+                            <tr>
+                                <td class=\"celda-incidencias celda-cabecera bg-dark text-white\"><a class=\"enlace-servicio\" href=\"" . base_url("index.php/incidencias/servicios/") . "{$servicio_afectado}\">{$servicio_afectado_web}</a></td>";
+    */
+
+    //  Versión sin enlace en el nombre del servicio:
+    echo "
+                            <tr>
+                                <td class=\"celda-incidencias celda-cabecera bg-dark text-white\">{$salida["nombre"]}</td>";
+    for ($h = $hora_inicio; $h <= $hora_fin; $h++) {
+
+        if (array_key_exists($salida["nombre_corto"], $listado_incidencias_salida_hora)) {
+
+            if (array_key_exists($h, $listado_incidencias_salida_hora[$salida["nombre_corto"]])) {
+
+                //  Cálculo del porcentaje de averías de este servicio respecto 
+                //  al total de averías en ese tramo horario
+                $porcentaje = number_format(round(($listado_incidencias_salida_hora[$salida["nombre_corto"]][$h] / $incidencias_hora[$h]) * 100, 2), "2", ",", ".");
+
+                echo "
+                                <td class=\"celda-incidencias\"><a class=\"dato-inc dato-inc-salida\" data-toggle=\"modal\" data-target=\"#modal-listado-salidas\" data-salida=\"{$salida["nombre_corto"]}\" data-fecha=\"{$fecha_consulta->format('Y-m-d')}\" data-hora=\"{$h}\" data-tipo-cliente=\"{$this->input->post("tipo_cliente")}\"><span title=\"{$porcentaje} %\">{$listado_incidencias_salida_hora[$salida["nombre_corto"]][$h]}</span></a></td>" . PHP_EOL;
+            } else {
+                echo "
+                                <td class=\"celda-incidencias\">0</td>" . PHP_EOL;
+            }
+        } else {
+            echo "
+                                <td class=\"celda-incidencias\">0</td>" . PHP_EOL;
+        }
+    }
+    
+    if (array_key_exists($salida["nombre_corto"], $listado_incidencias_salida_hora)) {
+
+        //  Cálculo del porcentaje de averías de este salida respecto 
+        //  al total de averías 
+        $porcentaje_total = number_format(round(($listado_incidencias_salida_total[$salida["nombre_corto"]] / $incidencias_total) * 100, 2), "2", ",", ".");
+
+        echo "
+                                <td class=\"celda-incidencias\"><a class=\"dato-inc dato-inc-salida-total\" data-toggle=\"modal\" data-target=\"#modal-listado-salidas\" data-salida=\"{$salida["nombre_corto"]}\" data-fecha=\"{$fecha_consulta->format('Y-m-d')}\" data-tipo-cliente=\"{$this->input->post("tipo_cliente")}\"><span title=\"{$porcentaje_total} %\">{$listado_incidencias_salida_total[$salida["nombre_corto"]]}</span></a></td>
+                            </tr>" . PHP_EOL;
+    } else {
+        echo "
+                                <td class=\"celda-incidencias\">0</td>" . PHP_EOL;
+    }
+}
+?>
+                        </tbody>
+                    </table>
+
+<?php
+} else {
+?>
+                    <div class="alert alert-warning text-center">
+                        No hay datos
+                    </div>
+<?php 
+}
+?>
+                </div>
+            </div> <!-- row Salidas -->
+
 
             <!-- ======================================================================= -->
             <!--                                 ZONAS                                   -->
@@ -412,6 +511,26 @@ foreach ($listado_ntts as $ntt => $datos) {
                         </button>
                     </div>
                     <div class="modal-body modal-listado" id="listado-correlados">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para las incidencias por salida -->
+        <div class="modal fade" id="modal-listado-salidas" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Incidencias por salida</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body modal-listado" id="listado-salidas">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>

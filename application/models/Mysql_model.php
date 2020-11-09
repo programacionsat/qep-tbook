@@ -465,6 +465,80 @@ class MySQL_model extends CI_Model {
     }
 
 
+    public function obtener_listado_incidencias_salidas_hora($salida, $fecha, $hora, $tipo_cliente) {
+
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT *
+            FROM $tabla_incidencias 
+            WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
+              AND HOUR(fecha_creacion) = {$hora}
+              AND salida = '{$salida}'
+              $filtro_tipo_cliente
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array();
+
+    }
+
+
+    //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
+    public function obtener_listado_incidencias_salidas($salida, $fecha, $tipo_cliente) {
+
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT *
+            FROM $tabla_incidencias
+            WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
+              AND salida = '{$salida}'
+              $filtro_tipo_cliente
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array();
+
+    }
+
+
     //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
     public function obtener_listado_incidencias_servicio($servicio, $fecha, $tipo_cliente) {
 
@@ -925,6 +999,23 @@ class MySQL_model extends CI_Model {
 
     }
 
+    public function obtener_salidas_mostrar() {
+
+        $sql = "
+
+            SELECT *
+            FROM salidas_master
+            WHERE mostrar = 's'
+            ORDER BY orden
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
+
+    }
+
     public function obtener_incidencias_zona_hora($fecha, $tipo_cliente) {
 
         //  Si la fecha de consulta no es el día actual, entonces
@@ -952,7 +1043,48 @@ class MySQL_model extends CI_Model {
             FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               $filtro_tipo_cliente
-            GROUP BY MID(nodo, 1, 2), HOUR(fecha_creacion)
+            GROUP BY MID(nodo, 1, 2), 
+                     HOUR(fecha_creacion)
+            ORDER BY HOUR(fecha_creacion)
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
+
+    }
+
+
+    public function obtener_incidencias_salida_hora($fecha, $tipo_cliente) {
+
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT salida AS salida,
+                   COUNT(id_ticket) as total_incidencias,
+                   HOUR(fecha_creacion) as hora_incidencia
+            FROM $tabla_incidencias 
+            WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
+              $filtro_tipo_cliente
+            GROUP BY salida,
+                     HOUR(fecha_creacion)
             ORDER BY HOUR(fecha_creacion)
 
         ";
@@ -1171,6 +1303,145 @@ class MySQL_model extends CI_Model {
 
         return $query->result_array(); 
 
+    }
+
+    public function actualizar_salida_soporte($tabla, $fecha) {
+
+        switch ($tabla) {
+            case 'hoy':
+                $tabla = "incidencias_hoy";
+                break;
+            case 'historico':
+                $tabla = "incidencias_historico";
+                break;
+        }
+
+        $sql = "
+            UPDATE $tabla
+               SET salida = 'Soporte'
+             WHERE tipo_peticion = 'SOPORTE'
+        ";
+
+
+        $query = $this->mysql->query($sql);
+
+        return $query; 
+
+    }
+
+
+    public function actualizar_salida_correlado_ntt($tabla, $fecha) {
+
+        switch ($tabla) {
+            case 'hoy':
+                $tabla = "incidencias_hoy";
+                break;
+            case 'historico':
+                $tabla = "incidencias_historico";
+                break;
+        }
+
+        $sql = "
+            UPDATE $tabla
+               SET salida = 'Correlado'
+             WHERE ntt IS NOT NULL
+        ";
+
+
+        $query = $this->mysql->query($sql);
+
+        return $query; 
+
+    }
+
+
+
+
+    public function actualizar_salida_otros($tabla, $fecha) {
+
+        switch ($tabla) {
+            case 'hoy':
+                $tabla = "incidencias_hoy";
+                break;
+            case 'historico':
+                $tabla = "incidencias_historico";
+                break;
+        }
+
+        $sql = "
+            UPDATE $tabla
+               SET salida = 'Otros'
+             WHERE salida IS NULL
+        ";
+
+
+        $query = $this->mysql->query($sql);
+
+        return $query; 
+
+    }
+
+
+    public function actualizar_salida_visita($tabla, $id_ticket) {
+
+        switch ($tabla) {
+            case 'hoy':
+                $tabla = "incidencias_hoy";
+                break;
+            case 'historico':
+                $tabla = "incidencias_historico";
+                break;
+        }
+
+        $sql = "
+            UPDATE $tabla
+               SET salida = 'Visita'
+             WHERE id_ticket = {$id_ticket}
+        ";
+
+
+        $query = $this->mysql->query($sql);
+
+        return $query; 
+
+    }
+
+
+    public function actualizar_salida_oym($tabla, $id_ticket) {
+
+        switch ($tabla) {
+            case 'hoy':
+                $tabla = "incidencias_hoy";
+                break;
+            case 'historico':
+                $tabla = "incidencias_historico";
+                break;
+        }
+
+        $sql = "
+            UPDATE $tabla
+               SET salida = 'OyM'
+             WHERE id_ticket = {$id_ticket}
+        ";
+
+
+        $query = $this->mysql->query($sql);
+
+        return $query; 
+
+    }
+
+
+    public function obtener_incidencias_hoy() {
+
+        $sql = "
+            SELECT id_ticket
+            FROM {$this->tabla_hoy}
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
     }
 }
 ?>

@@ -80,6 +80,34 @@ $( ".dato-inc-servicio" ).click(function() {
     //console.log("servicio: " + servicio + " - " + "hora: " + hora);
 });
 
+$( ".dato-inc-salida" ).click(function() {
+  
+    var salida = $(this).data('salida');
+    var fecha = $(this).data('fecha');
+    var hora = $(this).data('hora');
+    var tipo_cliente = $(this).data('tipo-cliente');
+    var url = "index.php/incidencias/salidas_fecha_hora";
+
+    console.log("Controlador: " + url);
+
+    $.post(
+        url,
+        {
+            salida: salida,
+            fecha: fecha,
+            hora: hora,
+            tipo_cliente: tipo_cliente
+        },
+        function(data, status) {
+            $("#listado-salidas").html(data);
+            console.log(data);
+            console.log(status);
+            //  alert("Data: " + data + "\nStatus: " + status);
+    });
+
+    //console.log("servicio: " + servicio + " - " + "hora: " + hora);
+});
+
 $( ".dato-inc-zona" ).click(function() {
   
     var zona = $(this).data('zona');
@@ -129,6 +157,32 @@ $( ".dato-inc-ntt" ).click(function() {
         },
         function(data, status) {
             $("#listado-correlados").html(data);
+            console.log(data);
+            console.log(status);
+            //  alert("Data: " + data + "\nStatus: " + status);
+    });
+
+    //console.log("servicio: " + servicio + " - " + "hora: " + hora);
+});
+
+$( ".dato-inc-salida-total" ).click(function() {
+
+    var salida = $(this).data('salida');
+    var fecha = $(this).data('fecha');
+    var tipo_cliente = $(this).data('tipo-cliente');
+    var url = "index.php/incidencias/salidas_fecha";
+
+    console.log("Controlador: " + url);
+
+    $.post(
+        url,
+        {
+            salida: salida,
+            fecha: fecha,
+            tipo_cliente: tipo_cliente
+        },
+        function(data, status) {
+            $("#listado-salidas").html(data);
             console.log(data);
             console.log(status);
             //  alert("Data: " + data + "\nStatus: " + status);

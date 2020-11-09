@@ -142,6 +142,63 @@ class Tbook_model extends CI_Model {
         return $query->result_array();
     }
 
+
+    public function obtener_salida_visita($id_ticket) {
+
+        $sql = "
+
+            SELECT t.task_id
+            FROM tbook.task t
+            WHERE
+                  t.ts_id = 153 -- FINALIZADA
+              AND t.tm_id = 1349 -- CONCERTACION CITA CLIENTE
+              AND t.request_id = {$id_ticket}
+
+        ";
+
+        $query = $this->db->query($sql);
+
+        return $query->result_array();
+    }
+
+
+    public function obtener_salida_oym($id_ticket) {
+
+        $sql = "
+
+            SELECT
+                t.task_id as id_tarea
+            FROM
+                     tbook.task t
+                INNER JOIN tbook.request r ON t.request_id = r.request_id
+                INNER JOIN tbook.hist_task_status s on t.task_id = s.task_id
+            WHERE
+                    t.request_id = {$id_ticket}
+                AND t.tm_id = 1348 -- DIAGNOSTICO REMOTO
+                AND s.ts_id = 151 -- EN COLA
+                -- AND t.idusergroups = 103 -- R_CAC_SAT (usuario creador)
+                AND s.idusergroups = 624 -- R_OpRed_N1_Gestion
+        ";
+
+        $query = $this->db->query($sql);
+
+        return $query->result_array();
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public function get_tipo_ticket($id_ticket) {
 
         $sql = "

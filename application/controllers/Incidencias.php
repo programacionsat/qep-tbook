@@ -198,7 +198,26 @@ echo "</pre>";
         foreach ($listado_incidencias_zona_hora as $zona => $datos_zona) {
             $listado_incidencias_zona_total[$zona] = array_sum($datos_zona);
         }
-        
+
+
+        //  -------------------------------------------------------------------
+        //
+        //                      Incidencias por salidas
+        // 
+        //  -------------------------------------------------------------------  
+        $listado_salidas = $this->mysql_model->obtener_salidas_mostrar();
+        $incidencias_salida_hora = $this->mysql_model->obtener_incidencias_salida_hora($fecha_consulta->format("Y-m-d"), $tipo_cliente);
+
+        $listado_incidencias_salida_hora = [];
+        foreach ($incidencias_salida_hora as $incidencia_salida_hora) {
+            $listado_incidencias_salida_hora[$incidencia_salida_hora["salida"]][$incidencia_salida_hora["hora_incidencia"]] = $incidencia_salida_hora["total_incidencias"];
+        }
+
+
+        $listado_incidencias_salida_total = [];
+        foreach ($listado_incidencias_salida_hora as $salida => $datos_salida) {
+            $listado_incidencias_salida_total[$salida] = array_sum($datos_salida);
+        }      
 
         $fecha_actualizacion = $this->mysql_model->obtener_fecha_actualizacion();
         $fecha_actualizacion = new DateTime($fecha_actualizacion[0]["fecha"]);
@@ -213,6 +232,9 @@ echo "</pre>";
         $datos["correspondencia_zonas"] = $zonas_nombre;
         $datos["listado_incidencias_zona_hora"] = $listado_incidencias_zona_hora;
         $datos["listado_incidencias_zona_total"] = $listado_incidencias_zona_total;
+        $datos["listado_salidas"] = $listado_salidas;
+        $datos["listado_incidencias_salida_hora"] = $listado_incidencias_salida_hora;
+        $datos["listado_incidencias_salida_total"] = $listado_incidencias_salida_total;
         $datos["listado_ntts"] = $listado_ntts;
         $datos["listado_ntts_hora"] = $listado_ntts_hora;
         $datos["info_ntts"] = $info_ntts;
@@ -395,6 +417,117 @@ echo "</pre>";
                 <tbody>" . PHP_EOL;
 
         foreach ($incidencias_zonas_hora as $incidencia) {
+            echo "
+                    <tr>
+                        <td>{$incidencia["id_ticket"]}</td>
+                        <td>{$incidencia["id_externo"]}</td>
+                        <td>{$incidencia["servicio_afectado"]}</td>
+                        <td>{$incidencia["funcionalidad"]}</td>
+                        <td>{$incidencia["sintoma"]}</td>
+                        <td>{$incidencia["salida"]}</td>
+                        <td>{$incidencia["nodo"]}</td>
+                        <td>{$incidencia["ntt"]}</td>
+                        <td>{$incidencia["usuario_creador"]}</td>
+                        <td>{$incidencia["nombre_cliente"]}</td>
+                        <td>{$incidencia["tipo_cliente"]}</td>
+                    </tr>" . PHP_EOL;
+        }
+        echo "
+                </tbody>
+            </table>" . PHP_EOL;
+
+    }
+
+    public function salidas_fecha_hora() {
+
+        $salida = $this->input->post("salida");
+        $fecha = $this->input->post("fecha");
+        $hora = $this->input->post("hora");
+        $tipo_cliente = $this->input->post("tipo_cliente");
+
+        if ($tipo_cliente != null) {
+            $tipo_cliente = $this->input->post("tipo_cliente");
+        } else {
+            $tipo_cliente = "todo";
+        }
+
+        $incidencias_salidas_hora = $this->mysql_model->obtener_listado_incidencias_salidas_hora($salida, $fecha, $hora, $tipo_cliente);       
+        
+        echo "
+            <table class=\"table table-sm table-striped tabla-listado-incidencias\">
+                <thead class=\"thead-dark\">
+                    <tr>
+                        <th>ID ticket</th>
+                        <th>ID externo</th>
+                        <th>Servicio</th>
+                        <th>Funcionalidad</th>
+                        <th>Síntoma</th>
+                        <th>Salida</th>
+                        <th>Nodo</th>
+                        <th>NTT</th>
+                        <th>Usuario</th>
+                        <th>Cliente</th>
+                        <th>Tipo cliente</th>
+                    </tr>
+                </thead>
+                <tbody>" . PHP_EOL;
+
+        foreach ($incidencias_salidas_hora as $incidencia) {
+            echo "
+                    <tr>
+                        <td>{$incidencia["id_ticket"]}</td>
+                        <td>{$incidencia["id_externo"]}</td>
+                        <td>{$incidencia["servicio_afectado"]}</td>
+                        <td>{$incidencia["funcionalidad"]}</td>
+                        <td>{$incidencia["sintoma"]}</td>
+                        <td>{$incidencia["salida"]}</td>
+                        <td>{$incidencia["nodo"]}</td>
+                        <td>{$incidencia["ntt"]}</td>
+                        <td>{$incidencia["usuario_creador"]}</td>
+                        <td>{$incidencia["nombre_cliente"]}</td>
+                        <td>{$incidencia["tipo_cliente"]}</td>
+                    </tr>" . PHP_EOL;
+        }
+        echo "
+                </tbody>
+            </table>" . PHP_EOL;
+
+    }
+
+    public function salidas_fecha() {
+
+        $salida = $this->input->post("salida");
+        $fecha = $this->input->post("fecha");
+        $tipo_cliente = $this->input->post("tipo_cliente");
+
+        if ($tipo_cliente != null) {
+            $tipo_cliente = $this->input->post("tipo_cliente");
+        } else {
+            $tipo_cliente = "todo";
+        }
+
+        $incidencias_salidas = $this->mysql_model->obtener_listado_incidencias_salidas($salida, $fecha, $tipo_cliente);
+        
+        echo "
+            <table class=\"table table-sm table-striped tabla-listado-incidencias\">
+                <thead class=\"thead-dark\">
+                    <tr>
+                        <th>ID ticket</th>
+                        <th>ID externo</th>
+                        <th>Servicio</th>
+                        <th>Funcionalidad</th>
+                        <th>Síntoma</th>
+                        <th>Salida</th>
+                        <th>Nodo</th>
+                        <th>NTT</th>
+                        <th>Usuario</th>
+                        <th>Cliente</th>
+                        <th>Tipo cliente</th>
+                    </tr>
+                </thead>
+                <tbody>" . PHP_EOL;
+
+        foreach ($incidencias_salidas as $incidencia) {
             echo "
                     <tr>
                         <td>{$incidencia["id_ticket"]}</td>
