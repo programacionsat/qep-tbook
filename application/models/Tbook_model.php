@@ -59,7 +59,10 @@ class Tbook_model extends CI_Model {
                 func.functionality_name                                                 AS funcionalidad,
                 syn.syntom_name                                                         AS sintoma,
                 cad.nodo                                                                AS nodo,    
-                cad.correlated_ntt                                                      AS ntt,
+                CASE
+                    WHEN cad.correlate_status = 0 THEN cad.correlated_ntt
+                    ELSE null
+                END                                                                     AS ntt,
                 r.user_                                                                 AS usuario_creador,
                 cad.customer_name                                                       AS nombre_cliente,
                 cad.customer_type                                                       AS tipo_cliente
@@ -97,7 +100,10 @@ class Tbook_model extends CI_Model {
                 func.functionality_name                                                 AS funcionalidad,
                 syn.syntom_name                                                         AS sintoma,
                 cad.nodo                                                                AS nodo,    
-                cad.correlated_ntt                                                      AS ntt,
+                CASE
+                    WHEN cad.correlate_status = 0 THEN cad.correlated_ntt
+                    ELSE null
+                END                                                                     AS ntt,
                 r.user_                                                                 AS usuario_creador,
                 cad.customer_name                                                       AS nombre_cliente,
                 cad.customer_type                                                       AS tipo_cliente,
@@ -150,8 +156,7 @@ class Tbook_model extends CI_Model {
             SELECT t.task_id
             FROM tbook.task t
             WHERE
-                  t.ts_id = 153 -- FINALIZADA
-              AND t.tm_id = 1349 -- CONCERTACION CITA CLIENTE
+                  t.tm_id = 1349 -- CONCERTACION CITA CLIENTE
               AND t.request_id = {$id_ticket}
 
         ";
