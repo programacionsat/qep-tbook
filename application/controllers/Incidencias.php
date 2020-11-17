@@ -15,6 +15,15 @@ class Incidencias extends CI_Controller {
     //  Muestra 
     public function dashboard() {
 
+        // Insertar visita del usuario:
+        if (!isset($_SERVER["HTTP_CAS_USER"])) {
+            $usuario = "H157";
+        } else {
+            $usuario = strtoupper($_SERVER["HTTP_CAS_USER"]);
+        }
+        $app = "qep-tbook";
+        $this->mysql_model->insertar_visita($usuario, $app);
+
         $fecha_actual = new DateTime();
         
         if ($this->input->post("fecha") == null) {

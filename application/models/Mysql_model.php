@@ -9,9 +9,11 @@ class MySQL_model extends CI_Model {
     public function __construct() {
         parent::__construct();
         $this->mysql = $this->load->database("mysql", TRUE);
+        $this->control = $this->load->database("control", TRUE);
     }
 
-    public function insert_visita($usuario, $app) {
+    //  Registra la visita del usuario a la web
+    public function insertar_visita($usuario, $app) {
 
         $fecha = date("Y-m-d H:i:s");
 
@@ -21,7 +23,7 @@ class MySQL_model extends CI_Model {
             'fecha'     => $fecha
         ];
 
-        $this->mysql->insert("usuarios_apps_log", $datos_visita);
+        $this->control->insert("usuarios_apps_log", $datos_visita);
     }
 
     //  Elimina las incidencias de la tabla de incidencias de hoy

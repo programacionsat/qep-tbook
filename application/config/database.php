@@ -119,3 +119,27 @@ $db['mysql'] = array(
     'failover' => array(),
     'save_queries' => TRUE
 );
+
+//  Conexión con la base de datos que contiene la tabla
+//  de registro de visitas
+$db['control'] = array(
+    'dsn'   => '',
+    'hostname' => 'localhost',
+    'username' => 'postventa',
+    'password' => 'postventa',
+    'database' => 'control',
+    'dbdriver' => 'mysqli',
+    'dbprefix' => '',
+    'pconnect' => FALSE,
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => FALSE,
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'encrypt' => FALSE,
+    'compress' => FALSE,
+    'stricton' => FALSE,
+    'failover' => array(),
+    'save_queries' => TRUE
+);
