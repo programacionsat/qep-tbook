@@ -81,6 +81,11 @@ footer a:hover {
     width: 100%;
 }
 
+.tabla-incidencias td, 
+.tabla-incidencias th {
+    width: 10%;
+}
+
 .tabla-listado-incidencias th {
     white-space: nowrap;
 }
@@ -103,21 +108,71 @@ footer a:hover {
     border-radius: 4px;
 }
 
-.celda-incidencias:hover {
-    background-color: #eee;
-}
-
-a.dato-inc {
+.dato-inc {
     font-family: 'R Gerstner', sans-serif;
     font-weight: bold;
     text-decoration: none;
-    color: black;
+    font-size: 1.5rem;
 }
 
 a.dato-inc:hover {
-    cursor: pointer;
-    font-weight: bold;
+    color: black;
 }
+
+.dato-inc-nosensibilidad {
+    color: #444;
+}
+
+.dato-inc-sensibilidad-min {
+    color: #b94a48;
+}
+
+.dato-inc-sensibilidad-max {
+    color: #f2dede;
+}
+
+.dato-des {
+    font-size: 0.9rem;
+}
+
+.dato-des-min {
+    color: #b94a48;
+}
+
+.dato-des-max {
+    color: #f2dede;
+}
+
+td.sensibilidad-min {
+    background-color: #f2dede;
+}
+
+td.sensibilidad-max {
+    background-color: #b94a48;
+}
+
+
+/*
+.celda-incidencias:hover {
+    background-color: #eee;
+}
+*/
+/*
+a.dato-inc-normal {
+    color: black;
+}
+*/
+a.dato-inc:hover {
+    cursor: pointer;
+    /*font-weight: bold;*/
+}
+
+
+a.dato-inc-ntt,
+a.dato-inc-ntt-total {
+    color: #444;
+}
+
 
 .celda-cabecera {
     white-space: normal;

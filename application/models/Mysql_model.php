@@ -5,6 +5,7 @@ class MySQL_model extends CI_Model {
 
     private $tabla_hoy = "incidencias_hoy";
     private $tabla_historico = "incidencias_historico";
+    private $tabla_umbrales_servicios = "umbrales_servicios";
 
     public function __construct() {
         parent::__construct();
@@ -1165,8 +1166,8 @@ class MySQL_model extends CI_Model {
 
     }
 
-    //  Inserta el valor de un umbral
-    public function insertar_umbral($umbral) {
+    //  Inserta el valor de un umbral para los servicios
+    public function insertar_umbral_servicios($umbral) {
 
         $datos = [
             "nombre_dia"            => $umbral["nombre_dia"],
@@ -1177,8 +1178,25 @@ class MySQL_model extends CI_Model {
             "incidencias_promedio"  => $umbral["incidencias_promedio"]
         ];
 
-        $query = $this->mysql->insert('umbrales', $datos);
+        $query = $this->mysql->insert('umbrales_servicios', $datos);
 
+        return $query;
+
+    }
+
+    public function eliminar_umbrales_servicios() {
+
+        date_default_timezone_set("Europe/Madrid");
+
+        $sql = "
+
+            TRUNCATE $this->tabla_umbrales_servicios
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        // Devuelve true si se ha vaciado correctamente la tabla
         return $query;
 
     }
@@ -1219,7 +1237,15 @@ class MySQL_model extends CI_Model {
 
     }
 
-    public function obtener_umbral_servicio_hora($servicio, $dia, $tipo_cliente) {
+    public function obtener_umbral_servicio_hora($servicio, $dia, $tipo_cliente, $fecha_consulta) {
+
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha_consulta != date("Y-m-d")) {
+            $filtro_hora_umbral = "";
+        } else {
+            $filtro_hora_umbral = "AND hora <= " . date("G");
+        }
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -1234,8 +1260,9 @@ class MySQL_model extends CI_Model {
 
             SELECT hora, 
                    SUM(incidencias_promedio) AS incidencias_promedio
-            FROM umbrales
+            FROM $this->tabla_umbrales_servicios
             WHERE numero_dia = {$dia}
+              $filtro_hora_umbral
               AND servicio_afectado = '{$servicio}'
               $filtro_tipo_cliente
             GROUP BY hora
@@ -1248,7 +1275,19 @@ class MySQL_model extends CI_Model {
 
     }
 
-    public function obtener_umbral_sin_servicio_hora($dia, $tipo_cliente) {
+    //  Obtener umbrales de incidencias sin servicio afectado
+    //  Dependiendo de la hora del día, el valor será diferente ya que
+    //  no tiene sentido que si estamos a las 12, comparemos con los
+    //  umbrales del día entero.
+    public function obtener_umbral_sin_servicio_hora($dia, $tipo_cliente, $fecha_consulta) {
+
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha_consulta != date("Y-m-d")) {
+            $filtro_hora_umbral = "";
+        } else {
+            $filtro_hora_umbral = "AND hora <= " . date("G");
+        }
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -1263,8 +1302,9 @@ class MySQL_model extends CI_Model {
 
             SELECT hora, 
                    SUM(incidencias_promedio) AS incidencias_promedio
-            FROM umbrales
+            FROM $this->tabla_umbrales_servicios
             WHERE numero_dia = {$dia}
+              $filtro_hora_umbral
               AND servicio_afectado IS NULL
               $filtro_tipo_cliente
             GROUP BY hora
@@ -1278,7 +1318,15 @@ class MySQL_model extends CI_Model {
     }
 
 
-    public function obtener_umbral_otros_servicios_hora($filtro_servicios, $dia, $tipo_cliente) {
+    public function obtener_umbral_otros_servicios_hora($filtro_servicios, $dia, $tipo_cliente, $fecha_consulta) {
+
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha_consulta != date("Y-m-d")) {
+            $filtro_hora_umbral = "";
+        } else {
+            $filtro_hora_umbral = "AND hora <= " . date("G");
+        }
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -1293,8 +1341,9 @@ class MySQL_model extends CI_Model {
 
             SELECT hora, 
                    SUM(incidencias_promedio) AS incidencias_promedio
-            FROM umbrales
+            FROM $this->tabla_umbrales_servicios
             WHERE numero_dia = {$dia}
+              $filtro_hora_umbral
               AND servicio_afectado NOT IN {$filtro_servicios}
               $filtro_tipo_cliente
             GROUP BY hora

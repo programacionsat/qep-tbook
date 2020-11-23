@@ -32,6 +32,15 @@ class Incidencias extends CI_Controller {
             $fecha_consulta = new DateTime($this->input->post("fecha"));
         }
 
+        //  Sensibilidad (para mostrar desviación respecto umbrales)
+        if ($this->input->post() == null) {
+            $sensibilidad_min = 10;
+            $sensibilidad_max = 20;
+        } else {
+            $sensibilidad_min = (int) $this->input->post("sensibilidad_minima");
+            $sensibilidad_max = (int) $this->input->post("sensibilidad_maxima");
+        }
+
         if ($fecha_consulta->format("Y-m-d") == $fecha_actual->format("Y-m-d")) {
             $es_historico = false;
         } else {
@@ -118,16 +127,16 @@ echo "</pre>";
             switch ($servicio) {
                 case 'sin':
                     $incidencias_servicio[$servicio] = $this->mysql_model->obtener_incidencias_sin_servicio_hora($fecha_consulta->format("Y-m-d"), $tipo_cliente);
-                    $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_sin_servicio_hora($numero_dia_semana, $tipo_cliente);
+                    $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_sin_servicio_hora($numero_dia_semana, $tipo_cliente, $fecha_consulta->format("Y-m-d"));
                     break;
                 case 'otros':
                     $filtro_servicios = "('" . implode("', '", array_keys($listado_servicios_reales_a_mostrar)) . "')";
                     $incidencias_servicio[$servicio] = $this->mysql_model->obtener_incidencias_otros_servicios_hora($filtro_servicios, $fecha_consulta->format("Y-m-d"), $tipo_cliente);
-                    $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_otros_servicios_hora($filtro_servicios, $numero_dia_semana, $tipo_cliente);
+                    $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_otros_servicios_hora($filtro_servicios, $numero_dia_semana, $tipo_cliente, $fecha_consulta->format("Y-m-d"));
                     break;
                 default:
                     $incidencias_servicio[$servicio] = $this->mysql_model->obtener_incidencias_servicio_hora($servicio, $fecha_consulta->format("Y-m-d"), $tipo_cliente);
-                    $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_servicio_hora($servicio, $numero_dia_semana, $tipo_cliente);
+                    $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_servicio_hora($servicio, $numero_dia_semana, $tipo_cliente, $fecha_consulta->format("Y-m-d"));
                     break;
             }
             
@@ -140,18 +149,30 @@ echo "</pre>";
             }
         }
 
-        //  Buscamos los umbrales de cada servicio y hora
+        //  Estructuramos el array con los umbrales por servicio y hora
         $datos_umbrales_servicio = [];
         foreach ($umbrales_servicio as $servicio => $datos) {
             foreach ($datos as $dato) {
                 $datos_umbrales_servicio[$servicio][$dato["hora"]] = $dato["incidencias_promedio"];
             }
         }
-
+/*
+        //    DEBUG
+echo "<pre>";
+var_dump($datos_umbrales_servicio);
+echo "</pre>";
+exit();
+*/
         //  Totales por servicio
         $datos_incidencias_servicio_total = [];
         foreach ($datos_incidencias_servicio as $servicio_sql => $datos_servicio) {
             $datos_incidencias_servicio_total[$servicio_sql] = array_sum($datos_servicio);
+        }
+
+        //  Totales de umbrales por servicio
+        $datos_umbrales_servicio_total = [];
+        foreach ($datos_umbrales_servicio as $servicio_sql => $datos_umbrales) {
+            $datos_umbrales_servicio_total[$servicio_sql] = array_sum($datos_umbrales);
         }
 
         //  Cálculo de las incidencias totales por hora para poder calcular 
@@ -234,9 +255,12 @@ echo "</pre>";
         $datos["listado_servicios_mostrar_web"] = $listado_servicios_mostrar_web;
         $datos["incidencias_hora"] = $datos_incidencias_hora;
         $datos["incidencias_total"] = $datos_incidencias_total;
-        $datos["umbrales"] = $datos_umbrales_servicio;
         $datos["servicios"] = $datos_incidencias_servicio;
         $datos["servicios_total"] = $datos_incidencias_servicio_total;
+        $datos["sensibilidad_min"] = $sensibilidad_min;
+        $datos["sensibilidad_max"] = $sensibilidad_max;
+        $datos["umbrales_servicios"] = $datos_umbrales_servicio;
+        $datos["umbrales_servicios_total"] = $datos_umbrales_servicio_total;
         $datos["listado_zonas"] = $listado_zonas;
         $datos["correspondencia_zonas"] = $zonas_nombre;
         $datos["listado_incidencias_zona_hora"] = $listado_incidencias_zona_hora;
