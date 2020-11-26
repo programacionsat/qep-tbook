@@ -147,6 +147,8 @@ for ($h = $hora_inicio; $h <= $hora_fin; $h++) {
                         </thead>
                         <tbody>
 <?php
+//  Incidencias acumuladas por hora
+$total_servicio_hora = [];
 foreach ($listado_servicios_mostrar_web as $servicio_afectado => $servicio_afectado_web) {
 
     //  Versión con enlace al servicio:
@@ -165,6 +167,8 @@ foreach ($listado_servicios_mostrar_web as $servicio_afectado => $servicio_afect
         if (array_key_exists($servicio_afectado, $servicios)) {
 
             if (array_key_exists($h, $servicios[$servicio_afectado])) {
+
+                $total_servicio_hora[$h][] = $servicios[$servicio_afectado][$h];
 
                 //  Cálculo del porcentaje de averías de este servicio respecto 
                 //  al total de averías en ese tramo horario
@@ -270,6 +274,110 @@ foreach ($listado_servicios_mostrar_web as $servicio_afectado => $servicio_afect
     }
 }
 ?>
+                            <tr>
+<?php
+/*
+//    DEBUG
+echo "<pre>";
+var_dump($total_servicio_hora);
+echo "</pre>";
+exit();
+*/
+?>
+                                <td class="celda-incidencias celda-cabecera bg-dark text-white"><strong>Total</strong></td>
+<?php 
+$total_dia = 0;
+for ($h = $hora_inicio; $h <= $hora_fin; $h++) {
+    if (array_key_exists($h, $total_servicio_hora)) {
+        $total = array_sum($total_servicio_hora[$h]);
+        $total_dia += $total;
+
+        //  Lo esperado de incidencias para esta hora
+        $umbral = $umbrales_servicios_total_hora[$h];
+
+        if ($umbrales_servicios_total_hora[$h] != 0) {
+            $porcentaje_desviacion = round((($total - $umbrales_servicios_total_hora[$h]) /
+                                        $umbrales_servicios_total_hora[$h]) * 100, 2);
+            $desviacion = ($total - $umbrales_servicios_total_hora[$h]) /
+                                        $umbrales_servicios_total_hora[$h];
+        } else {
+            $porcentaje_desviacion = $total * 100;
+            $desviacion = $total;
+        }
+
+        $estilo_fondo_sensibilidad = "";
+        $estilo_dato_sensibilidad = "color: black;";
+        $clase_dato_sensibilidad = "dato-inc-nosensibilidad";
+        $clase_dato_desviacion = "";
+        $clase_sensibilidad = "";
+
+        if ($porcentaje_desviacion >= $sensibilidad_min) {
+            if ($porcentaje_desviacion < $sensibilidad_max) {
+                //  Si superamos la sensibilidad mínima, pero no la máxima:
+                $clase_sensibilidad = "sensibilidad-min";
+                $clase_dato_sensibilidad = "dato-inc-sensibilidad-min";
+                $clase_dato_desviacion = "dato-des-min";
+            } else {
+                $clase_sensibilidad = "sensibilidad-max";
+                $clase_dato_sensibilidad = "dato-inc-sensibilidad-max";
+                $clase_dato_desviacion = "dato-des-max";
+            }
+        }
+
+        echo "
+                                <td class=\"celda-incidencias {$clase_sensibilidad}\">
+                                    <span class=\"dato-inc-total {$clase_dato_sensibilidad}\">{$total}</span><br>
+                                    <span class=\"dato-des {$clase_dato_desviacion}\">" . str_replace(".", ",", $porcentaje_desviacion) . " %</span>
+                                </td>" . PHP_EOL;
+    } else {
+        echo "
+                                <td class=\"celda-incidencias\"><span class=\"dato-inc dato-inc-nosensibilidad\">0</span></td>";
+    }
+}
+?>
+<?php 
+    //  Número de incidencias de todo el día
+    //  -----------------------------------------------------------------------
+
+    //  Lo esperado para servicios
+    $umbral = $umbrales_servicios_total_dia;
+
+    if ($umbral != 0) {
+        $porcentaje_desviacion = round((($total_dia - $umbral) /
+                                    $umbral) * 100, 2);
+        $desviacion = ($total_dia - $umbral) /
+                                    $umbral;
+    } else {
+        $porcentaje_desviacion = $total_dia * 100;
+        $desviacion = $total_dia;
+    }
+
+    $estilo_fondo_sensibilidad = "";
+    $estilo_dato_sensibilidad = "color: black;";
+    $clase_dato_sensibilidad = "dato-inc-nosensibilidad";
+    $clase_dato_desviacion = "";
+    $clase_sensibilidad = "";
+
+    if ($porcentaje_desviacion >= $sensibilidad_min) {
+        if ($porcentaje_desviacion < $sensibilidad_max) {
+            //  Si superamos la sensibilidad mínima, pero no la máxima:
+            $clase_sensibilidad = "sensibilidad-min";
+            $clase_dato_sensibilidad = "dato-inc-sensibilidad-min";
+            $clase_dato_desviacion = "dato-des-min";
+        } else {
+            $clase_sensibilidad = "sensibilidad-max";
+            $clase_dato_sensibilidad = "dato-inc-sensibilidad-max";
+            $clase_dato_desviacion = "dato-des-max";
+        }
+    }
+
+    echo "
+                            <td class=\"celda-incidencias {$clase_sensibilidad}\">
+                                <span class=\"dato-inc-total {$clase_dato_sensibilidad}\">{$total_dia}</span><br>
+                                <span class=\"dato-des {$clase_dato_desviacion}\">" . str_replace(".", ",", $porcentaje_desviacion) . " %</span>
+                                </td>";
+?>
+                            </tr>
                         </tbody>
                     </table>
 

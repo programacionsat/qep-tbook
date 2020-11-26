@@ -1356,6 +1356,43 @@ class MySQL_model extends CI_Model {
 
     }
 
+    public function obtener_umbrales_servicios_hora($dia, $tipo_cliente, $fecha_consulta) {
+
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha_consulta != date("Y-m-d")) {
+            $filtro_hora_umbral = "";
+        } else {
+            $filtro_hora_umbral = "AND hora <= " . date("G");
+        }
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT hora, 
+                   SUM(incidencias_promedio) AS incidencias_promedio
+            FROM $this->tabla_umbrales_servicios
+            WHERE numero_dia = {$dia}
+              $filtro_hora_umbral
+              $filtro_tipo_cliente
+            GROUP BY hora
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
+
+    }
+
     public function actualizar_salida_soporte($tabla, $fecha) {
 
         switch ($tabla) {

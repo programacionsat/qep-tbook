@@ -117,12 +117,13 @@ echo "</pre>";
         }
 
         $incidencias_servicio = [];
+        
         //  Obtener umbrales por servicio y hora
         $umbrales_servicio = [];
         
-        foreach ($listado_servicios_mostrar_web as $servicio => $servicio_web) {
+        $numero_dia_semana = $fecha_consulta->format("N");
 
-            $numero_dia_semana = $fecha_consulta->format("N");
+        foreach ($listado_servicios_mostrar_web as $servicio => $servicio_web) {
 
             switch ($servicio) {
                 case 'sin':
@@ -140,7 +141,12 @@ echo "</pre>";
                     break;
             }
             
-        }    
+        }
+
+        //  Umbrales por hora sin tener en cuenta el tipo de servicio afectado
+        $umbrales_servicios_total_hora = [];
+        $umbrales_servicios_total_hora = $this->mysql_model->obtener_umbrales_servicios_hora($numero_dia_semana, $tipo_cliente, $fecha_consulta->format("Y-m-d"));
+
 
         $datos_incidencias_servicio = [];
         foreach ($incidencias_servicio as $servicio => $datos) {
@@ -156,13 +162,21 @@ echo "</pre>";
                 $datos_umbrales_servicio[$servicio][$dato["hora"]] = $dato["incidencias_promedio"];
             }
         }
+
+        //  Estructuramos el array con los umbrales por todos los servicios y hora
+        $datos_umbrales_servicios_total_hora = [];
+        foreach ($umbrales_servicios_total_hora as $datos) {
+            $datos_umbrales_servicios_total_hora[$datos["hora"]] = $datos["incidencias_promedio"];
+        }
+
 /*
         //    DEBUG
 echo "<pre>";
-var_dump($datos_umbrales_servicio);
+var_dump($datos_umbrales_servicios_total_hora);
 echo "</pre>";
 exit();
 */
+
         //  Totales por servicio
         $datos_incidencias_servicio_total = [];
         foreach ($datos_incidencias_servicio as $servicio_sql => $datos_servicio) {
@@ -174,6 +188,9 @@ exit();
         foreach ($datos_umbrales_servicio as $servicio_sql => $datos_umbrales) {
             $datos_umbrales_servicio_total[$servicio_sql] = array_sum($datos_umbrales);
         }
+
+        //  Totales de umbrales de servicio, para el día
+        $datos_umbrales_servicios_total_dia = array_sum($datos_umbrales_servicios_total_hora);
 
         //  Cálculo de las incidencias totales por hora para poder calcular 
         //  los porcentajes de incidencias por servicio respecto al total
@@ -261,6 +278,8 @@ exit();
         $datos["sensibilidad_max"] = $sensibilidad_max;
         $datos["umbrales_servicios"] = $datos_umbrales_servicio;
         $datos["umbrales_servicios_total"] = $datos_umbrales_servicio_total;
+        $datos["umbrales_servicios_total_hora"] = $datos_umbrales_servicios_total_hora;
+        $datos["umbrales_servicios_total_dia"] = $datos_umbrales_servicios_total_dia;
         $datos["listado_zonas"] = $listado_zonas;
         $datos["correspondencia_zonas"] = $zonas_nombre;
         $datos["listado_incidencias_zona_hora"] = $listado_incidencias_zona_hora;
