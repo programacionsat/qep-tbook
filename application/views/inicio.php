@@ -287,10 +287,10 @@ exit();
                                 <td class="celda-incidencias celda-cabecera bg-dark text-white"><strong>Total</strong></td>
 <?php 
 $total_dia = 0;
+
 for ($h = $hora_inicio; $h <= $hora_fin; $h++) {
     if (array_key_exists($h, $total_servicio_hora)) {
         $total = array_sum($total_servicio_hora[$h]);
-        $total_dia += $total;
 
         //  Lo esperado de incidencias para esta hora
         $umbral = $umbrales_servicios_total_hora[$h];
@@ -341,6 +341,8 @@ for ($h = $hora_inicio; $h <= $hora_fin; $h++) {
 
     //  Lo esperado para servicios
     $umbral = $umbrales_servicios_total_dia;
+
+    $total_dia = array_sum($servicios_total);
 
     if ($umbral != 0) {
         $porcentaje_desviacion = round((($total_dia - $umbral) /
