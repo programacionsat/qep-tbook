@@ -25,9 +25,9 @@ class Tools extends CI_Controller {
     public function actualizar() {
 
         if($this->input->is_cli_request()) {
-            echo "[" . date("Y-m-d H:i:s") . "] Obteniendo incidencias INICIO" . PHP_EOL;
+            // echo "[" . date("Y-m-d H:i:s") . "] Obteniendo incidencias INICIO" . PHP_EOL;
 
-            echo "[" . date("Y-m-d H:i:s") . "] Eliminando incidencias" . PHP_EOL;
+            // echo "[" . date("Y-m-d H:i:s") . "] Eliminando incidencias" . PHP_EOL;
 
             //  Eliminamos las incidencias actuales en la tabla de hoy 
             //  y en el histórico.
@@ -41,11 +41,11 @@ class Tools extends CI_Controller {
                 exit();
             }
 
-            echo "[" . date("Y-m-d H:i:s") . "] Buscando incidencias" . PHP_EOL;
+            // echo "[" . date("Y-m-d H:i:s") . "] Buscando incidencias" . PHP_EOL;
 
             $data["incidencias"] = $this->tbook_model->obtener_incidencias_hoy();
 
-            echo "[" . date("Y-m-d H:i:s") . "] Almacenando incidencias" . PHP_EOL;
+            // echo "[" . date("Y-m-d H:i:s") . "] Almacenando incidencias" . PHP_EOL;
             foreach ($data["incidencias"] as $incidencia) {
                 // print_r($reclamacion);
 
@@ -63,7 +63,7 @@ class Tools extends CI_Controller {
 
 
             //  Buscar soportes y actualizar salida
-            echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Soporte*" . PHP_EOL;
+            // echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Soporte*" . PHP_EOL;
             if (!$this->mysql_model->actualizar_salida_soporte("hoy", date("Y-m-d"))) {
                 echo "Error actualizando salida *Soporte*" . PHP_EOL;
                 exit();
@@ -76,7 +76,7 @@ class Tools extends CI_Controller {
 
 
             //  Actualizar salida *Correlado a NTT*
-            echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Correlado a NTT*" . PHP_EOL;
+            // echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Correlado a NTT*" . PHP_EOL;
             if (!$this->mysql_model->actualizar_salida_correlado_ntt("hoy", date("Y-m-d"))) {
                 echo "Error actualizando salida *Correlado a NTT*" . PHP_EOL;
                 exit();
@@ -89,7 +89,7 @@ class Tools extends CI_Controller {
 
 
             //  Actualizar salida *Visita*
-            echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Visita*" . PHP_EOL;
+            // echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Visita*" . PHP_EOL;
             $incidencias_hoy = $this->mysql_model->obtener_incidencias_hoy();
 
             $tickets_visita = [];
@@ -116,7 +116,7 @@ class Tools extends CI_Controller {
 
 
             //  Actualizar salida *Escalado a O&M*
-            echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Escalado a O&M*" . PHP_EOL;
+            // echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Escalado a O&M*" . PHP_EOL;
 
             $tickets_escalados_oym = [];
             foreach ($incidencias_hoy as $incidencia) {
@@ -142,7 +142,7 @@ class Tools extends CI_Controller {
 
 
             //  Actualizar salida *Otros*
-            echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Otros*" . PHP_EOL;
+            // echo "[" . date("Y-m-d H:i:s") . "] Actualizando salida *Otros*" . PHP_EOL;
             if (!$this->mysql_model->actualizar_salida_otros("hoy", date("Y-m-d"))) {
                 echo "Error actualizando salida *Otros*" . PHP_EOL;
                 exit();
@@ -159,7 +159,7 @@ class Tools extends CI_Controller {
 
             //print_r($data);
 
-            echo "[" . date("Y-m-d H:i:s") . "] Obteniendo incidencias FIN" . PHP_EOL;
+            // echo "[" . date("Y-m-d H:i:s") . "] Obteniendo incidencias FIN" . PHP_EOL;
         } else {
             echo "<strong>Este script solo se puede utilizar desde línea de comandos</strong>" . PHP_EOL;
         }
@@ -390,6 +390,8 @@ class Tools extends CI_Controller {
 
         $dias_totales = [];
         $umbrales_servicios = [];
+        $umbrales_salidas = [];
+
         foreach ($dias_semana as $numero_dia => $dia) {
 
             //  Según los días de la semana
@@ -397,19 +399,36 @@ class Tools extends CI_Controller {
             $dias_totales[$dia] = $fechas[0]["dias"];
 
             //  var_dump($dias_totales);
-
+/*
             //  ---------------------------------------------------------------
             //                      Umbrales por servicio
             //  ---------------------------------------------------------------
             //  Buscamos las incidencias por servicio, hora y tipo de cliente
-            $incidencias = [];
-            $incidencias = $this->mysql_model->obtener_incidencias_servicio_umbrales($dia, $ano_inicio, $ano_fin);
-            foreach ($incidencias as $incidencia) {
+            $incidencias_servicio = [];
+            $incidencias_servicio = $this->mysql_model->obtener_incidencias_servicio_umbrales($dia, $ano_inicio, $ano_fin);
+            foreach ($incidencias_servicio as $incidencia) {
                 $umbrales_servicios[] = [
                     "nombre_dia"            => $dia,
                     "numero_dia"            => $numero_dia,
                     "hora"                  => $incidencia["hora"],
                     "servicio_afectado"     => $incidencia["servicio_afectado"],
+                    "tipo_cliente"          => $incidencia["tipo_cliente"],
+                    "incidencias_promedio"  => round($incidencia["total"] / $dias_totales[$dia])
+                ];
+            }
+*/
+            //  ---------------------------------------------------------------
+            //                      Umbrales por salida
+            //  ---------------------------------------------------------------
+            //  Buscamos las incidencias por hora, salida y tipo de cliente
+            $incidencias_salida = [];
+            $incidencias_salida = $this->mysql_model->obtener_incidencias_salida_umbrales($dia, $ano_inicio, $ano_fin);
+            foreach ($incidencias_salida as $incidencia) {
+                $umbrales_salidas[] = [
+                    "nombre_dia"            => $dia,
+                    "numero_dia"            => $numero_dia,
+                    "hora"                  => $incidencia["hora"],
+                    "salida"                => $incidencia["salida"],
                     "tipo_cliente"          => $incidencia["tipo_cliente"],
                     "incidencias_promedio"  => round($incidencia["total"] / $dias_totales[$dia])
                 ];
@@ -421,17 +440,32 @@ class Tools extends CI_Controller {
 
         //  var_dump($umbrales_servicios);
         //  exit();
-
+/*
         if (!$this->mysql_model->eliminar_umbrales_servicios()) {
             echo "Error SQL eliminando tabla umbrales_servicios" . PHP_EOL;
             exit();
         }
-        
+*/
+        if (!$this->mysql_model->eliminar_umbrales_salidas()) {
+            echo "Error SQL eliminando tabla umbrales_salidas" . PHP_EOL;
+            exit();
+        }
+/*        
         //  Insertamos los umbrales en la base de datos
         foreach ($umbrales_servicios as $umbral) {
 
             if (!$insertar_umbral = $this->mysql_model->insertar_umbral_servicios($umbral)) {
-                echo "Error SQL insertando umbral" . PHP_EOL;
+                echo "Error SQL insertando umbral para servicios" . PHP_EOL;
+                exit();
+            }
+        }
+
+*/
+        //  Insertamos los umbrales en la base de datos
+        foreach ($umbrales_salidas as $umbral) {
+
+            if (!$insertar_umbral = $this->mysql_model->insertar_umbral_salidas($umbral)) {
+                echo "Error SQL insertando umbral para salidas" . PHP_EOL;
                 exit();
             }
         }

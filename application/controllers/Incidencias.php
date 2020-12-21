@@ -12,7 +12,7 @@ class Incidencias extends CI_Controller {
         $this->load->model("mysql_model");
     }
 
-    //  Muestra 
+     
     public function dashboard() {
 
         // Insertar visita del usuario:
@@ -260,10 +260,38 @@ exit();
         $incidencias_salida_hora = $this->mysql_model->obtener_incidencias_salida_hora($fecha_consulta->format("Y-m-d"), $tipo_cliente);
 
         $listado_incidencias_salida_hora = [];
+        
+        //  Obtener umbrales por salida y hora
+        $umbrales_salida = [];
+
         foreach ($incidencias_salida_hora as $incidencia_salida_hora) {
             $listado_incidencias_salida_hora[$incidencia_salida_hora["salida"]][$incidencia_salida_hora["hora_incidencia"]] = $incidencia_salida_hora["total_incidencias"];
+            $umbrales_salida[$incidencia_salida_hora["salida"]] = $this->mysql_model->obtener_umbral_salida_hora($incidencia_salida_hora["salida"], $numero_dia_semana, $tipo_cliente, $fecha_consulta->format("Y-m-d"));
         }
 
+        //  Estructuramos el array con los umbrales por salida y hora
+        $datos_umbrales_salida = [];
+        foreach ($umbrales_salida as $salida => $datos) {
+            foreach ($datos as $dato) {
+                $datos_umbrales_salida[$salida][$dato["hora"]] = $dato["incidencias_promedio"];
+            }
+        }
+/*
+        //  Estructuramos el array con los umbrales por todos los salidas y hora
+        $datos_umbrales_salidas_total_hora = [];
+        foreach ($umbrales_salidas_total_hora as $datos) {
+            $datos_umbrales_salidas_total_hora[$datos["hora"]] = $datos["incidencias_promedio"];
+        }
+*/
+        //  Totales de umbrales por salida
+        $datos_umbrales_salida_total = [];
+        foreach ($datos_umbrales_salida as $salida_sql => $datos_umbrales) {
+            $datos_umbrales_salida_total[$salida_sql] = array_sum($datos_umbrales);
+        }
+/*
+        //  Totales de umbrales de salida, para el día
+        $datos_umbrales_servicios_total_dia = array_sum($datos_umbrales_servicios_total_hora);
+*/
 
         $listado_incidencias_salida_total = [];
         foreach ($listado_incidencias_salida_hora as $salida => $datos_salida) {
@@ -284,6 +312,10 @@ exit();
         $datos["umbrales_servicios_total"] = $datos_umbrales_servicio_total;
         $datos["umbrales_servicios_total_hora"] = $datos_umbrales_servicios_total_hora;
         $datos["umbrales_servicios_total_dia"] = $datos_umbrales_servicios_total_dia;
+        $datos["umbrales_salidas"] = $datos_umbrales_salida;
+        $datos["umbrales_salidas_total"] = $datos_umbrales_salida_total;
+        //$datos["umbrales_servicios_total_hora"] = $datos_umbrales_salidas_total_hora;
+        //$datos["umbrales_servicios_total_dia"] = $datos_umbrales_servicios_total_dia;
         $datos["listado_zonas"] = $listado_zonas;
         $datos["correspondencia_zonas"] = $zonas_nombre;
         $datos["listado_incidencias_zona_hora"] = $listado_incidencias_zona_hora;

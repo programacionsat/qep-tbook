@@ -6,6 +6,7 @@ class MySQL_model extends CI_Model {
     private $tabla_hoy = "incidencias_hoy";
     private $tabla_historico = "incidencias_historico";
     private $tabla_umbrales_servicios = "umbrales_servicios";
+    private $tabla_umbrales_salidas = "umbrales_salidas";
 
     public function __construct() {
         parent::__construct();
@@ -1346,7 +1347,7 @@ class MySQL_model extends CI_Model {
                 t.servicio_afectado AS servicio_afectado,
                 t.tipo_cliente AS tipo_cliente,
                 COUNT(t.id_ticket) AS total
-            FROM incidencias t
+            FROM {$this->tabla_historico} t
             WHERE DATE_FORMAT(t.fecha_creacion, '%Y-%m-%d') IN (
                                                                 SELECT fecha
                                                                 FROM calendario c
@@ -1356,6 +1357,36 @@ class MySQL_model extends CI_Model {
                                                             )
             GROUP BY HOUR(t.fecha_creacion), 
                      t.servicio_afectado, 
+                     t.tipo_cliente
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
+
+    }
+
+    //  Obtiene las incidencias agrupadas por hora, salida y tipo de cliente
+    public function obtener_incidencias_salida_umbrales($nombre_dia_semana, $ano_inicio, $ano_fin) {
+
+        $sql = "
+
+            SELECT 
+                HOUR(t.fecha_creacion) AS hora,
+                t.salida AS salida,
+                t.tipo_cliente AS tipo_cliente,
+                COUNT(t.id_ticket) AS total
+            FROM {$this->tabla_historico} t
+            WHERE DATE_FORMAT(t.fecha_creacion, '%Y-%m-%d') IN (
+                                                                SELECT fecha
+                                                                FROM calendario c
+                                                                WHERE c.ano >= $ano_inicio
+                                                                  AND c.ano <= $ano_fin
+                                                                  AND c.nombre_dia = '{$nombre_dia_semana}'
+                                                            )
+            GROUP BY HOUR(t.fecha_creacion), 
+                     t.salida, 
                      t.tipo_cliente
 
         ";
@@ -1378,12 +1409,32 @@ class MySQL_model extends CI_Model {
             "incidencias_promedio"  => $umbral["incidencias_promedio"]
         ];
 
-        $query = $this->mysql->insert('umbrales_servicios', $datos);
+        $query = $this->mysql->insert($this->tabla_umbrales_servicios, $datos);
 
         return $query;
 
     }
 
+
+    //  Inserta el valor de un umbral para las salidas
+    public function insertar_umbral_salidas($umbral) {
+
+        $datos = [
+            "nombre_dia"            => $umbral["nombre_dia"],
+            "numero_dia"            => $umbral["numero_dia"],
+            "hora"                  => $umbral["hora"],
+            "salida"                => $umbral["salida"],
+            "tipo_cliente"          => $umbral["tipo_cliente"],
+            "incidencias_promedio"  => $umbral["incidencias_promedio"]
+        ];
+
+        $query = $this->mysql->insert($this->tabla_umbrales_salidas, $datos);
+
+        return $query;
+
+    }
+
+    //  Elimina la tabla *umbrales_servicios*
     public function eliminar_umbrales_servicios() {
 
         date_default_timezone_set("Europe/Madrid");
@@ -1391,6 +1442,25 @@ class MySQL_model extends CI_Model {
         $sql = "
 
             TRUNCATE $this->tabla_umbrales_servicios
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        // Devuelve true si se ha vaciado correctamente la tabla
+        return $query;
+
+    }
+
+
+    //  Elimina la tabla *umbrales_salidas*
+    public function eliminar_umbrales_salidas() {
+
+        date_default_timezone_set("Europe/Madrid");
+
+        $sql = "
+
+            TRUNCATE $this->tabla_umbrales_salidas
 
         ";
 
@@ -1617,6 +1687,52 @@ class MySQL_model extends CI_Model {
               AND servicio_afectado NOT IN {$filtro_servicios}
               AND servicio_afectado NOT IN {$filtro_voip}
               $filtro_tipo_cliente
+            GROUP BY hora
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
+
+    }
+
+
+    //  Obtener umbrales de incidencias por su salida
+    //  Dependiendo de la hora del día, el valor será diferente ya que
+    //  no tiene sentido que si estamos a las 12, comparemos con los
+    //  umbrales del día entero.
+    public function obtener_umbral_salida_hora($salida, $dia, $tipo_cliente, $fecha_consulta) {
+
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha_consulta != date("Y-m-d")) {
+            $filtro_hora_umbral = "";
+        } else {
+            $filtro_hora_umbral = "AND hora <= " . date("G");
+        }
+
+        $filtro_salida = "
+            AND salida = '{$salida}'";
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT hora, 
+                   SUM(incidencias_promedio) AS incidencias_promedio
+            FROM $this->tabla_umbrales_salidas
+            WHERE numero_dia = {$dia}
+              $filtro_hora_umbral 
+              $filtro_salida 
+              $filtro_tipo_cliente 
             GROUP BY hora
 
         ";

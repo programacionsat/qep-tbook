@@ -276,13 +276,9 @@ foreach ($listado_servicios_mostrar_web as $servicio_afectado => $servicio_afect
 ?>
                             <tr>
 <?php
-/*
-//    DEBUG
-echo "<pre>";
-var_dump($total_servicio_hora);
-echo "</pre>";
-exit();
-*/
+
+//  Fila final con los totales de incidencias por tramo horario
+//  -----------------------------------------------------------
 ?>
                                 <td class="celda-incidencias celda-cabecera bg-dark text-white"><strong>Total</strong></td>
 <?php 
@@ -462,9 +458,44 @@ foreach ($listado_salidas as $salida) {
                 //  al total de averías en ese tramo horario
                 $porcentaje = number_format(round(($listado_incidencias_salida_hora[$salida["nombre_corto"]][$h] / $incidencias_hora[$h]) * 100, 2), "2", ",", ".");
 
+                //  Lo esperado para ese servicio en ese tramo horario:
+                //$umbral = $umbrales_servicios[$servicio_afectado][$h];
+
+
+                if ($umbrales_salidas[$salida["nombre_corto"]][$h] != 0) {
+                    $porcentaje_desviacion = floatval(round((($listado_incidencias_salida_hora[$salida["nombre_corto"]][$h] - $umbrales_salidas[$salida["nombre_corto"]][$h]) /
+                                                $umbrales_salidas[$salida["nombre_corto"]][$h]) * 100, 2));
+                    $desviacion = ($listado_incidencias_salida_hora[$salida["nombre_corto"]][$h] - $umbrales_salidas[$salida["nombre_corto"]][$h]) /
+                                                $umbrales_salidas[$salida["nombre_corto"]][$h];
+                } else {
+                    $porcentaje_desviacion = floatval($listado_incidencias_salida_hora[$salida["nombre_corto"]][$h] * 100);
+                    $desviacion = $listado_incidencias_salida_hora[$salida["nombre_corto"]][$h];
+                }
+
+                $estilo_fondo_sensibilidad = "";
+                $estilo_dato_sensibilidad = "color: black;";
+                $clase_dato_sensibilidad = "dato-inc-nosensibilidad";
+                $clase_dato_desviacion = "";
+                $clase_sensibilidad = "";
+
+                if ($porcentaje_desviacion >= $sensibilidad_min) {
+                    if ($porcentaje_desviacion < $sensibilidad_max) {
+                        //  Si superamos la sensibilidad mínima, pero no la máxima:
+                        $clase_sensibilidad = "sensibilidad-min";
+                        $clase_dato_sensibilidad = "dato-inc-sensibilidad-min";
+                        $clase_dato_desviacion = "dato-des-min";
+                    } else {
+                        $clase_sensibilidad = "sensibilidad-max";
+                        $clase_dato_sensibilidad = "dato-inc-sensibilidad-max";
+                        $clase_dato_desviacion = "dato-des-max";
+                    }
+                }
+
                 echo "
-                                <td class=\"celda-incidencias\">
-                                    <a class=\"dato-inc dato-inc-salida {$clase_dato_sensibilidad}\" data-toggle=\"modal\" data-target=\"#modal-listado-salidas\" data-salida=\"{$salida["nombre_corto"]}\" data-fecha=\"{$fecha_consulta->format('Y-m-d')}\" data-hora=\"{$h}\" data-tipo-cliente=\"{$this->input->post("tipo_cliente")}\"><span title=\"{$porcentaje} %\">{$listado_incidencias_salida_hora[$salida["nombre_corto"]][$h]}</span></a></td>" . PHP_EOL;
+                                <td class=\"celda-incidencias {$clase_sensibilidad}\">
+                                    <a class=\"dato-inc dato-inc-salida {$clase_dato_sensibilidad}\" data-toggle=\"modal\" data-target=\"#modal-listado-salidas\" data-salida=\"{$salida["nombre_corto"]}\" data-fecha=\"{$fecha_consulta->format('Y-m-d')}\" data-hora=\"{$h}\" data-tipo-cliente=\"{$this->input->post("tipo_cliente")}\"><span title=\"{$porcentaje} %\">{$listado_incidencias_salida_hora[$salida["nombre_corto"]][$h]}</span></a><br>
+                                    <span class=\"dato-des {$clase_dato_desviacion}\">" . str_replace(".", ",", $porcentaje_desviacion) . " %</span>
+                                </td>" . PHP_EOL;
             } else {
                 echo "
                                 <td class=\"celda-incidencias\"><span class=\"dato-inc dato-inc-nosensibilidad\">0</span></td>" . PHP_EOL;
@@ -474,6 +505,9 @@ foreach ($listado_salidas as $salida) {
                                 <td class=\"celda-incidencias\"><span class=\"dato-inc dato-inc-nosensibilidad\">0</span></td>" . PHP_EOL;
         }
     }
+
+    //  Total del día para incidencias con esta salida
+    //  ----------------------------------------------
     
     if (array_key_exists($salida["nombre_corto"], $listado_incidencias_salida_hora)) {
 
@@ -483,9 +517,41 @@ foreach ($listado_salidas as $salida) {
         //  al total de averías 
         $porcentaje_total = number_format(round(($listado_incidencias_salida_total[$salida["nombre_corto"]] / $incidencias_total) * 100, 2), "2", ",", ".");
 
+
+        if ($umbrales_salidas_total[$salida["nombre_corto"]] != 0) {
+            $porcentaje_desviacion = round((($listado_incidencias_salida_total[$salida["nombre_corto"]] - $umbrales_salidas_total[$salida["nombre_corto"]]) /
+                                        $umbrales_salidas_total[$salida["nombre_corto"]]) * 100, 2);
+            $desviacion = ($listado_incidencias_salida_total[$salida["nombre_corto"]] - $umbrales_salidas_total[$salida["nombre_corto"]]) /
+                                        $umbrales_salidas_total[$salida["nombre_corto"]];
+        } else {
+            $porcentaje_desviacion = $listado_incidencias_salida_total[$salida["nombre_corto"]] * 100;
+            $desviacion = $listado_incidencias_salida_total[$salida["nombre_corto"]];
+        }
+
+        $estilo_fondo_sensibilidad = "";
+        $estilo_dato_sensibilidad = "color: black;";
+        $clase_dato_sensibilidad = "dato-inc-nosensibilidad";
+        $clase_dato_desviacion = "";
+        $clase_sensibilidad = "";
+
+        if ($porcentaje_desviacion >= $sensibilidad_min) {
+            if ($porcentaje_desviacion < $sensibilidad_max) {
+                //  Si superamos la sensibilidad mínima, pero no la máxima:
+                $clase_sensibilidad = "sensibilidad-min";
+                $clase_dato_sensibilidad = "dato-inc-sensibilidad-min";
+                $clase_dato_desviacion = "dato-des-min";
+            } else {
+                $clase_sensibilidad = "sensibilidad-max";
+                $clase_dato_sensibilidad = "dato-inc-sensibilidad-max";
+                $clase_dato_desviacion = "dato-des-max";
+            }
+        }
+
         echo "
-                                <td class=\"celda-incidencias\">
-                                    <a class=\"dato-inc dato-inc-salida-total {$clase_dato_sensibilidad}\" data-toggle=\"modal\" data-target=\"#modal-listado-salidas\" data-salida=\"{$salida["nombre_corto"]}\" data-fecha=\"{$fecha_consulta->format('Y-m-d')}\" data-tipo-cliente=\"{$this->input->post("tipo_cliente")}\"><span title=\"{$porcentaje_total} %\">{$listado_incidencias_salida_total[$salida["nombre_corto"]]}</span></a></td>
+                                <td class=\"celda-incidencias {$clase_sensibilidad}\">
+                                    <a class=\"dato-inc dato-inc-salida-total {$clase_dato_sensibilidad}\" data-toggle=\"modal\" data-target=\"#modal-listado-salidas\" data-salida=\"{$salida["nombre_corto"]}\" data-fecha=\"{$fecha_consulta->format('Y-m-d')}\" data-tipo-cliente=\"{$this->input->post("tipo_cliente")}\"><span title=\"{$porcentaje_total} %\">{$listado_incidencias_salida_total[$salida["nombre_corto"]]}</span></a><br>
+                                    <span class=\"dato-des {$clase_dato_desviacion}\">" . str_replace(".", ",", $porcentaje_desviacion) . " %</span>
+                                </td>
                             </tr>" . PHP_EOL;
     } else {
         echo "
