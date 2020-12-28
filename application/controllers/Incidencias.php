@@ -126,6 +126,10 @@ echo "</pre>";
         foreach ($listado_servicios_mostrar_web as $servicio => $servicio_web) {
 
             switch ($servicio) {
+                case 'grp_internet':
+                    $incidencias_servicio[$servicio] = $this->mysql_model->obtener_incidencias_internet_hora($fecha_consulta->format("Y-m-d"), $tipo_cliente);
+                    $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_internet_hora($numero_dia_semana, $tipo_cliente, $fecha_consulta->format("Y-m-d"));
+                    break;
                 case 'movil':
                     $incidencias_servicio[$servicio] = $this->mysql_model->obtener_incidencias_movil_hora($fecha_consulta->format("Y-m-d"), $tipo_cliente);
                     $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_movil_hora($numero_dia_semana, $tipo_cliente, $fecha_consulta->format("Y-m-d"));
@@ -367,6 +371,9 @@ exit();
         $hora = $this->input->post("hora");
 
         switch ($servicio) {
+            case 'grp_internet':
+                $incidencias_servicio_hora = $this->mysql_model->obtener_listado_incidencias_internet_hora($fecha, $hora, $tipo_cliente);
+                break;
             case 'movil':
                 $incidencias_servicio_hora = $this->mysql_model->obtener_listado_incidencias_movil_hora($fecha, $hora, $tipo_cliente);
                 break;
@@ -786,6 +793,9 @@ exit();
         $fecha = $this->input->post("fecha");
 
         switch ($servicio) {
+            case 'grp_internet':
+                $incidencias_servicio = $this->mysql_model->obtener_listado_incidencias_internet($fecha, $tipo_cliente);
+                break;
             case 'movil':
                 $incidencias_servicio = $this->mysql_model->obtener_listado_incidencias_movil($fecha, $tipo_cliente);
                 break;
