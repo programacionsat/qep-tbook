@@ -179,6 +179,51 @@ class MySQL_model extends CI_Model {
 
     }
 
+    //  Obtiene las incidencias por hora para los servicios de Móvil
+    public function obtener_incidencias_movil_hora($fecha, $tipo_cliente) {
+
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
+        $filtro_movil = "
+            AND servicio_afectado IN (
+                                        'TLMovil',
+                                        'TLMovilMultiSIM'
+                                    )";
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT COUNT(id_ticket) as total_incidencias,
+                   HOUR(fecha_creacion) as hora_incidencia
+            FROM $tabla_incidencias
+            WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
+              $filtro_movil
+              $filtro_tipo_cliente
+            GROUP BY HOUR(fecha_creacion)
+            ORDER BY HOUR(fecha_creacion)
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array();
+
+    }
+
 
     public function obtener_incidencias_voip_hora($fecha, $tipo_cliente) {
 
@@ -256,6 +301,13 @@ class MySQL_model extends CI_Model {
                 'extension_IP_IMS'
             )";
 
+        $filtro_movil = "
+            (
+                'TLMovil',
+                'TLMovilMultiSIM'
+            )
+        ";
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -273,6 +325,7 @@ class MySQL_model extends CI_Model {
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND servicio_afectado NOT IN {$filtro_servicios}
               AND servicio_afectado NOT IN {$filtro_voip}
+              AND servicio_afectado NOT IN {$filtro_movil}
               $filtro_tipo_cliente
             GROUP BY HOUR(fecha_creacion)
             ORDER BY HOUR(fecha_creacion)
@@ -524,6 +577,13 @@ class MySQL_model extends CI_Model {
                 'extension_IP_IMS'
             )";
 
+        $filtro_movil = "
+            (
+                'TLMovil',
+                'TLMovilMultiSIM'
+            )
+        ";
+
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -541,6 +601,51 @@ class MySQL_model extends CI_Model {
               AND HOUR(fecha_creacion) = {$hora}
               AND servicio_afectado NOT IN {$filtro_servicios}
               AND servicio_afectado NOT IN {$filtro_voip}
+              AND servicio_afectado NOT IN {$filtro_movil}
+              $filtro_tipo_cliente
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array();
+
+    }
+
+
+    //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
+    public function obtener_listado_incidencias_movil_hora($fecha, $hora, $tipo_cliente) {
+
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
+        $filtro_movil = "
+            AND servicio_afectado IN (
+                                        'TLMovil',
+                                        'TLMovilMultiSIM'
+                                    )";
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT *
+            FROM $tabla_incidencias 
+            WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
+              AND HOUR(fecha_creacion) = {$hora}
+              $filtro_movil
               $filtro_tipo_cliente
 
         ";
@@ -773,7 +878,14 @@ class MySQL_model extends CI_Model {
                 'TL_lineaSIP_Reventa',
                 'TL_linea_SIP_nomada',
                 'extension_IP_IMS'
-            )";   
+            )"; 
+
+        $filtro_movil = "
+            (
+                'TLMovil',
+                'TLMovilMultiSIM'
+            )
+        ";  
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -791,6 +903,51 @@ class MySQL_model extends CI_Model {
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND servicio_afectado NOT IN {$filtro_servicios}
               AND servicio_afectado NOT IN {$filtro_voip}
+              AND servicio_afectado NOT IN {$filtro_movil}
+              $filtro_tipo_cliente
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array();
+
+    }
+
+
+    //  Devuelve toda la información sobre una incidencia en base a la fecha
+    public function obtener_listado_incidencias_movil($fecha, $tipo_cliente) {
+
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
+        $filtro_movil = "
+            AND servicio_afectado IN (
+                                        'TLMovil',
+                                        'TLMovilMultiSIM'
+                                    )
+        "; 
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT *
+            FROM $tabla_incidencias 
+            WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
+              $filtro_movil
               $filtro_tipo_cliente
 
         ";
@@ -1587,6 +1744,54 @@ class MySQL_model extends CI_Model {
 
     }
 
+    //  Obtener umbrales de incidencias relacionadas con Móvil
+    //  Dependiendo de la hora del día, el valor será diferente ya que
+    //  no tiene sentido que si estamos a las 12, comparemos con los
+    //  umbrales del día entero.
+    public function obtener_umbral_movil_hora($dia, $tipo_cliente, $fecha_consulta) {
+
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha_consulta != date("Y-m-d")) {
+            $filtro_hora_umbral = "";
+        } else {
+            $filtro_hora_umbral = "AND hora <= " . date("G");
+        }
+
+        $filtro_movil = "
+            AND servicio_afectado IN (
+                                        'TLMovil',
+                                        'TLMovilMultiSIM'
+                                    )";
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT hora, 
+                   SUM(incidencias_promedio) AS incidencias_promedio
+            FROM $this->tabla_umbrales_servicios
+            WHERE numero_dia = {$dia}
+              $filtro_hora_umbral 
+              $filtro_movil 
+              $filtro_tipo_cliente 
+            GROUP BY hora
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
+
+    }
+
     //  Obtener umbrales de incidencias relacionadas con la VoIP
     //  Dependiendo de la hora del día, el valor será diferente ya que
     //  no tiene sentido que si estamos a las 12, comparemos con los
@@ -1666,6 +1871,12 @@ class MySQL_model extends CI_Model {
                 'TL_lineaSIP_Reventa',
                 'TL_linea_SIP_nomada',
                 'extension_IP_IMS'
+            )";
+
+        $filtro_movil = "
+            (
+                'TLMovil',
+                'TLMovilMultiSIM'
             )";        
 
         switch ($tipo_cliente) {
@@ -1686,6 +1897,7 @@ class MySQL_model extends CI_Model {
               $filtro_hora_umbral
               AND servicio_afectado NOT IN {$filtro_servicios}
               AND servicio_afectado NOT IN {$filtro_voip}
+              AND servicio_afectado NOT IN {$filtro_movil}
               $filtro_tipo_cliente
             GROUP BY hora
 
