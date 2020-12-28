@@ -1102,6 +1102,16 @@ class MySQL_model extends CI_Model {
             $tabla_incidencias = $this->tabla_hoy;
         }
 
+        $filtro_internet = "
+            (
+                'Internet',
+                'AccesoMetroXeth',
+                'AccesoMetroXeth_Ind',
+                'AccesoRespaldo',
+                'm-Internet'
+            )
+        ";
+
         $filtro_voip = "
             (
                 'TL_lineaSIP',
@@ -1149,6 +1159,7 @@ class MySQL_model extends CI_Model {
             FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND servicio_afectado NOT IN {$filtro_servicios}
+              AND servicio_afectado NOT IN {$filtro_internet}
               AND servicio_afectado NOT IN {$filtro_voip}
               AND servicio_afectado NOT IN {$filtro_movil}
               AND servicio_afectado NOT IN {$filtro_telefonia}
