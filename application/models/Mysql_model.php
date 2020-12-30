@@ -195,6 +195,7 @@ class MySQL_model extends CI_Model {
                                         'Internet',
                                         'AccesoMetroXeth',
                                         'AccesoMetroXeth_Ind',
+                                        'AccesoMetroXeth_IndResp',
                                         'AccesoRespaldo',
                                         'm-Internet'
                                     )";
@@ -390,6 +391,7 @@ class MySQL_model extends CI_Model {
                 'Internet',
                 'AccesoMetroXeth',
                 'AccesoMetroXeth_Ind',
+                'AccesoMetroXeth_IndResp',
                 'AccesoRespaldo',
                 'm-Internet'
             )";
@@ -688,6 +690,7 @@ class MySQL_model extends CI_Model {
                 'Internet',
                 'AccesoMetroXeth',
                 'AccesoMetroXeth_Ind',
+                'AccesoMetroXeth_IndResp',
                 'AccesoRespaldo',
                 'm-Internet'
             )";
@@ -771,6 +774,7 @@ class MySQL_model extends CI_Model {
                                         'Internet',
                                         'AccesoMetroXeth',
                                         'AccesoMetroXeth_Ind',
+                                        'AccesoMetroXeth_IndResp',
                                         'AccesoRespaldo',
                                         'm-Internet'
                                     )";
@@ -1107,6 +1111,7 @@ class MySQL_model extends CI_Model {
                 'Internet',
                 'AccesoMetroXeth',
                 'AccesoMetroXeth_Ind',
+                'AccesoMetroXeth_IndResp',
                 'AccesoRespaldo',
                 'm-Internet'
             )
@@ -1189,6 +1194,7 @@ class MySQL_model extends CI_Model {
                                         'Internet',
                                         'AccesoMetroXeth',
                                         'AccesoMetroXeth_Ind',
+                                        'AccesoMetroXeth_IndResp',
                                         'AccesoRespaldo',
                                         'm-Internet'
                                     )
@@ -2115,6 +2121,7 @@ class MySQL_model extends CI_Model {
                                         'Internet',
                                         'AccesoMetroXeth',
                                         'AccesoMetroXeth_Ind',
+                                        'AccesoMetroXeth_IndResp',
                                         'AccesoRespaldo',
                                         'm-Internet'
                                     )";
