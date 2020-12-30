@@ -287,12 +287,14 @@ class MySQL_model extends CI_Model {
 
         $filtro_telefonia = "
             AND servicio_afectado IN (
+                                        'AccesoBasico',
+                                        'CentGenerica',
+                                        'CentralitaNumCabeceraAMLT_E',
                                         'TLAnalogica',
                                         'GrupoLdbc',
                                         'NumeracionCabecera',
-                                        'AccesoBasico',
-                                        'TLVirtual',
-                                        'TL_Analogica_AMLT'
+                                        'TL_Analogica_AMLT',
+                                        'TLVirtual'
                                     )";
 
         switch ($tipo_cliente) {
@@ -419,12 +421,14 @@ class MySQL_model extends CI_Model {
 
         $filtro_telefonia = "
             (
+                'AccesoBasico',
+                'CentGenerica',
+                'CentralitaNumCabeceraAMLT_E',
                 'TLAnalogica',
                 'GrupoLdbc',
                 'NumeracionCabecera',
-                'AccesoBasico',
-                'TLVirtual',
-                'TL_Analogica_AMLT'
+                'TL_Analogica_AMLT',
+                'TLVirtual'
             )
         ";
 
@@ -718,12 +722,14 @@ class MySQL_model extends CI_Model {
 
         $filtro_telefonia = "
             (
+                'AccesoBasico',
+                'CentGenerica',
+                'CentralitaNumCabeceraAMLT_E',
                 'TLAnalogica',
                 'GrupoLdbc',
                 'NumeracionCabecera',
-                'AccesoBasico',
-                'TLVirtual',
-                'TL_Analogica_AMLT'
+                'TL_Analogica_AMLT',
+                'TLVirtual'
             )
         ";
 
@@ -862,12 +868,14 @@ class MySQL_model extends CI_Model {
 
         $filtro_telefonia = "
             AND servicio_afectado IN (
+                                        'AccesoBasico',
+                                        'CentGenerica',
+                                        'CentralitaNumCabeceraAMLT_E',
                                         'TLAnalogica',
                                         'GrupoLdbc',
                                         'NumeracionCabecera',
-                                        'AccesoBasico',
-                                        'TLVirtual',
-                                        'TL_Analogica_AMLT'
+                                        'TL_Analogica_AMLT',
+                                        'TLVirtual'
                                     )";
 
         switch ($tipo_cliente) {
@@ -1140,12 +1148,14 @@ class MySQL_model extends CI_Model {
 
         $filtro_telefonia = "
             (
+                'AccesoBasico',
+                'CentGenerica',
+                'CentralitaNumCabeceraAMLT_E',
                 'TLAnalogica',
                 'GrupoLdbc',
                 'NumeracionCabecera',
-                'AccesoBasico',
-                'TLVirtual',
-                'TL_Analogica_AMLT'
+                'TL_Analogica_AMLT',
+                'TLVirtual'
             )
         ";
 
@@ -1282,12 +1292,14 @@ class MySQL_model extends CI_Model {
 
         $filtro_telefonia = "
             AND servicio_afectado IN (
+                                        'AccesoBasico',
+                                        'CentGenerica',
+                                        'CentralitaNumCabeceraAMLT_E',
                                         'TLAnalogica',
                                         'GrupoLdbc',
                                         'NumeracionCabecera',
-                                        'AccesoBasico',
-                                        'TLVirtual',
-                                        'TL_Analogica_AMLT'
+                                        'TL_Analogica_AMLT',
+                                        'TLVirtual'
                                     )
         "; 
 
@@ -2220,12 +2232,14 @@ class MySQL_model extends CI_Model {
 
         $filtro_telefonia = "
             AND servicio_afectado IN (
+                                        'AccesoBasico',
+                                        'CentGenerica',
+                                        'CentralitaNumCabeceraAMLT_E',
                                         'TLAnalogica',
                                         'GrupoLdbc',
                                         'NumeracionCabecera',
-                                        'AccesoBasico',
-                                        'TLVirtual',
-                                        'TL_Analogica_AMLT'
+                                        'TL_Analogica_AMLT',
+                                        'TLVirtual'
                                     )";
 
         switch ($tipo_cliente) {
@@ -2345,12 +2359,14 @@ class MySQL_model extends CI_Model {
 
         $filtro_telefonia = "
             (
-                'TLAnalogica'
+                'AccesoBasico',
+                'CentGenerica',
+                'CentralitaNumCabeceraAMLT_E',
+                'TLAnalogica',
                 'GrupoLdbc',
                 'NumeracionCabecera',
-                'AccesoBasico',
-                'TLVirtual',
-                'TL_Analogica_AMLT'
+                'TL_Analogica_AMLT',
+                'TLVirtual'
             )
         ";
 
