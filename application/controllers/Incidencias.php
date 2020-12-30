@@ -142,6 +142,10 @@ echo "</pre>";
                     $incidencias_servicio[$servicio] = $this->mysql_model->obtener_incidencias_voip_hora($fecha_consulta->format("Y-m-d"), $tipo_cliente);
                     $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_voip_hora($numero_dia_semana, $tipo_cliente, $fecha_consulta->format("Y-m-d"));
                     break;
+                case 'datacenter':
+                    $incidencias_servicio[$servicio] = $this->mysql_model->obtener_incidencias_datacenter_hora($fecha_consulta->format("Y-m-d"), $tipo_cliente);
+                    $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_datacenter_hora($numero_dia_semana, $tipo_cliente, $fecha_consulta->format("Y-m-d"));
+                    break;
                 case 'sin':
                     $incidencias_servicio[$servicio] = $this->mysql_model->obtener_incidencias_sin_servicio_hora($fecha_consulta->format("Y-m-d"), $tipo_cliente);
                     $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_sin_servicio_hora($numero_dia_semana, $tipo_cliente, $fecha_consulta->format("Y-m-d"));
@@ -382,6 +386,9 @@ exit();
                 break;
             case 'voip':
                 $incidencias_servicio_hora = $this->mysql_model->obtener_listado_incidencias_voip_hora($fecha, $hora, $tipo_cliente);
+                break;
+            case 'datacenter':
+                $incidencias_servicio_hora = $this->mysql_model->obtener_listado_incidencias_datacenter_hora($fecha, $hora, $tipo_cliente);
                 break;
             case 'otros':
                 $filtro_servicios = "('" . implode("', '", array_keys($listado_servicios_reales_a_mostrar)) . "')";
@@ -804,6 +811,9 @@ exit();
                 break;
             case 'voip':
                 $incidencias_servicio = $this->mysql_model->obtener_listado_incidencias_voip($fecha, $tipo_cliente);
+                break;
+            case 'datacenter':
+                $incidencias_servicio = $this->mysql_model->obtener_listado_incidencias_datacenter($fecha, $tipo_cliente);
                 break;
             case 'otros':
                 $filtro_servicios = "('" . implode("', '", array_keys($listado_servicios_reales_a_mostrar)) . "')";
