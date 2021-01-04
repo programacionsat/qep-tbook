@@ -34,11 +34,10 @@ if (!$es_historico) {
                             </div>
                             <div class="col-2">
                                 <select name="tipo_cliente" class="custom-select custom-select-sm">
-                                    <option value="todo">Todo</option>
 <?php 
 foreach ($tipos_cliente as $value => $option) {
 
-    if ($this->input->post("tipo_cliente") == $value) {
+    if ($tipo_cliente_seleccionado == $value) {
         echo "
                                     <option selected value=\"{$value}\">{$option}</option>" . PHP_EOL;
     } else {
@@ -101,7 +100,7 @@ for ($s_max = 20; $s_max <= 100; $s_max = $s_max + 20) {
                 </div>
             </div>
 <?php 
-if ($this->input->post("tipo_cliente") == "empresa") {
+if ($tipo_cliente_seleccionado == "empresa") {
 ?>
             <div class="row mt-4">
                 <div class="col">

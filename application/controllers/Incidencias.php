@@ -12,6 +12,8 @@ class Incidencias extends CI_Controller {
         $this->load->model("mysql_model");
     }
 
+    // Filtro por defecto al cargar la página
+    private $filtro_tipo_cliente_defecto = "empresa";
      
     public function dashboard() {
 
@@ -74,13 +76,18 @@ class Incidencias extends CI_Controller {
         //  Empresa = Gran Cuenta y Mediana
         //  Todo = sin filtros
         $tipos_cliente = [
-            "empresa"   => "Empresa"
+            "empresa"   => "Empresa",
+            "todo"      => "Todo"
         ];
 
+        // El filtro por defecto es "Empresa"
         if ($this->input->post("tipo_cliente") != null) {
             $tipo_cliente = $this->input->post("tipo_cliente");
+            $tipo_cliente_seleccionado = $tipo_cliente;
         } else {
-            $tipo_cliente = "todo";
+            //$tipo_cliente = "todo";
+            $tipo_cliente = "empresa";
+            $tipo_cliente_seleccionado = "empresa";
         }
 
 /*
@@ -346,6 +353,7 @@ exit();
         $datos["fecha_actualizacion"] = $fecha_actualizacion;
         $datos["es_historico"] = $es_historico;
         $datos["tipos_cliente"] = $tipos_cliente;
+        $datos["tipo_cliente_seleccionado"] = $tipo_cliente_seleccionado;
         $this->load->view("templates/header");
         // $this->load->view("templates/nav");
         $this->load->view("inicio", $datos);
@@ -357,10 +365,11 @@ exit();
 
         $tipo_cliente = $this->input->post("tipo_cliente");
 
+        // El filtro por defecto es "Empresa"
         if ($tipo_cliente != null) {
             $tipo_cliente = $this->input->post("tipo_cliente");
         } else {
-            $tipo_cliente = "todo";
+            $tipo_cliente = $this->filtro_tipo_cliente_defecto;
         }
 
         $servicios_reales_a_mostrar = $this->mysql_model->obtener_servicios_reales_mostrar();
@@ -452,10 +461,11 @@ exit();
         $hora = $this->input->post("hora");
         $tipo_cliente = $this->input->post("tipo_cliente");
 
+        // El filtro por defecto es "Empresa"
         if ($tipo_cliente != null) {
             $tipo_cliente = $this->input->post("tipo_cliente");
         } else {
-            $tipo_cliente = "todo";
+            $tipo_cliente = $this->filtro_tipo_cliente_defecto;
         }
 
         $incidencias_correladas_hora = $this->mysql_model->obtener_listado_incidencias_correladas_hora($ntt, $fecha, $hora, $tipo_cliente);       
@@ -508,10 +518,11 @@ exit();
         $hora = $this->input->post("hora");
         $tipo_cliente = $this->input->post("tipo_cliente");
 
+        // El filtro por defecto es "Empresa"
         if ($tipo_cliente != null) {
             $tipo_cliente = $this->input->post("tipo_cliente");
         } else {
-            $tipo_cliente = "todo";
+            $tipo_cliente = $this->filtro_tipo_cliente_defecto;
         }
 
         $incidencias_zonas_hora = $this->mysql_model->obtener_listado_incidencias_zonas_hora($zona, $fecha, $hora, $tipo_cliente);       
@@ -564,10 +575,11 @@ exit();
         $hora = $this->input->post("hora");
         $tipo_cliente = $this->input->post("tipo_cliente");
 
+        // El filtro por defecto es "Empresa"
         if ($tipo_cliente != null) {
             $tipo_cliente = $this->input->post("tipo_cliente");
         } else {
-            $tipo_cliente = "todo";
+            $tipo_cliente = $this->filtro_tipo_cliente_defecto;
         }
 
         $incidencias_salidas_hora = $this->mysql_model->obtener_listado_incidencias_salidas_hora($salida, $fecha, $hora, $tipo_cliente);       
@@ -619,10 +631,11 @@ exit();
         $fecha = $this->input->post("fecha");
         $tipo_cliente = $this->input->post("tipo_cliente");
 
+        // El filtro por defecto es "Empresa"
         if ($tipo_cliente != null) {
             $tipo_cliente = $this->input->post("tipo_cliente");
         } else {
-            $tipo_cliente = "todo";
+            $tipo_cliente = $this->filtro_tipo_cliente_defecto;
         }
 
         $incidencias_salidas = $this->mysql_model->obtener_listado_incidencias_salidas($salida, $fecha, $tipo_cliente);
@@ -674,10 +687,11 @@ exit();
         $fecha = $this->input->post("fecha");
         $tipo_cliente = $this->input->post("tipo_cliente");
 
+        // El filtro por defecto es "Empresa"
         if ($tipo_cliente != null) {
             $tipo_cliente = $this->input->post("tipo_cliente");
         } else {
-            $tipo_cliente = "todo";
+            $tipo_cliente = $this->filtro_tipo_cliente_defecto;
         }
 
         $incidencias_zonas_hora = $this->mysql_model->obtener_listado_incidencias_zonas($zona, $fecha, $tipo_cliente);
@@ -729,10 +743,11 @@ exit();
         $fecha = $this->input->post("fecha");
         $tipo_cliente = $this->input->post("tipo_cliente");
 
+        // El filtro por defecto es "Empresa"
         if ($tipo_cliente != null) {
             $tipo_cliente = $this->input->post("tipo_cliente");
         } else {
-            $tipo_cliente = "todo";
+            $tipo_cliente = $this->filtro_tipo_cliente_defecto;
         }
 
         $incidencias_correladas = $this->mysql_model->obtener_listado_incidencias_correladas($ntt, $fecha, $tipo_cliente);
@@ -783,10 +798,11 @@ exit();
 
         $tipo_cliente = $this->input->post("tipo_cliente");
 
+        // El filtro por defecto es "Empresa"
         if ($tipo_cliente != null) {
             $tipo_cliente = $this->input->post("tipo_cliente");
         } else {
-            $tipo_cliente = "todo";
+            $tipo_cliente = $this->filtro_tipo_cliente_defecto;
         }
 
         $servicios_reales_a_mostrar = $this->mysql_model->obtener_servicios_reales_mostrar();
