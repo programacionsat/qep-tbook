@@ -8,6 +8,61 @@ class MySQL_model extends CI_Model {
     private $tabla_umbrales_servicios = "umbrales_servicios";
     private $tabla_umbrales_salidas = "umbrales_salidas";
 
+    // Agrupaciones de servicios
+    private $grupo_internet = "
+        (
+            'AccesoMetroXeth',
+            'AccesoMetroXeth_Ind',
+            'AccesoMetroXeth_IndResp',
+            'AccesoRespaldo',
+            'Internet',
+            'm-Internet'
+        )";
+    private $grupo_movil = "
+        (
+            'TLMovil',
+            'TLMovilMultiSIM'
+        )";
+    private $grupo_telefonia = "
+        (
+            'AccesoBasico',
+            'CentGenerica',
+            'CentralitaNumCabeceraAMLT_E',
+            'CentSiemens',
+            'GrupoLdbc',
+            'NumeracionAdicional',
+            'NumeracionCabecera',
+            'NumeracionCabecera_AMLT',
+            'TL_Analogica_AMLT',
+            'TLAnalogica',
+            'TLVirtual'
+        )";
+    private $grupo_voip = "
+        (
+            'TL_lineaSIP',
+            'cabecera_IP',
+            'extension_IP',
+            'cabecera_CD',
+            'extension_interna_CD',
+            'extension_CD',
+            'GrupoSIP',
+            'TL_lineaSIP_Reventa',
+            'TL_linea_SIP_nomada',
+            'extension_IP_IMS'
+        )";
+    private $grupo_datacenter = "
+        (
+            'DatacenterVirtual',
+            'dominio',
+            'dominioresidencial',
+            'GrupoSIP',
+            'MicrosoftCSP',
+            'ServiciosISP',
+            'ServidorDedicado',
+            'ServidorVirtual',
+            'SVAdatacenterR'
+        )";
+
     public function __construct() {
         parent::__construct();
         $this->mysql = $this->load->database("mysql", TRUE);
@@ -191,14 +246,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_internet = "
-            AND servicio_afectado IN (
-                                        'Internet',
-                                        'AccesoMetroXeth',
-                                        'AccesoMetroXeth_Ind',
-                                        'AccesoMetroXeth_IndResp',
-                                        'AccesoRespaldo',
-                                        'm-Internet'
-                                    )";
+            AND servicio_afectado IN {$this->grupo_internet}";
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -240,10 +288,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_movil = "
-            AND servicio_afectado IN (
-                                        'TLMovil',
-                                        'TLMovilMultiSIM'
-                                    )";
+            AND servicio_afectado IN {$this->grupo_movil}";
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -389,16 +434,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_datacenter = "
-            AND servicio_afectado IN (
-                                        'DatacenterVirtual',
-                                        'dominio',
-                                        'dominioresidencial',
-                                        'GrupoSIP',
-                                        'MicrosoftCSP',
-                                        'ServidorDedicado',
-                                        'ServidorVirtual',
-                                        'SVAdatacenterR'
-                                    )";
+            AND servicio_afectado IN {$this->grupo_datacenter}";
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -438,50 +474,6 @@ class MySQL_model extends CI_Model {
             $tabla_incidencias = $this->tabla_hoy;
         }
 
-        $filtro_internet = "
-            (
-                'Internet',
-                'AccesoMetroXeth',
-                'AccesoMetroXeth_Ind',
-                'AccesoMetroXeth_IndResp',
-                'AccesoRespaldo',
-                'm-Internet'
-            )";
-
-        $filtro_voip = "
-            (
-                'TL_lineaSIP',
-                'cabecera_IP',
-                'extension_IP',
-                'cabecera_CD',
-                'extension_interna_CD',
-                'extension_CD',
-                'GrupoSIP',
-                'TL_lineaSIP_Reventa',
-                'TL_linea_SIP_nomada',
-                'extension_IP_IMS'
-            )";
-
-        $filtro_movil = "
-            (
-                'TLMovil',
-                'TLMovilMultiSIM'
-            )
-        ";
-
-        $filtro_telefonia = "
-            (
-                'AccesoBasico',
-                'CentGenerica',
-                'CentralitaNumCabeceraAMLT_E',
-                'TLAnalogica',
-                'GrupoLdbc',
-                'NumeracionCabecera',
-                'TL_Analogica_AMLT',
-                'TLVirtual'
-            )
-        ";
-
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -498,10 +490,11 @@ class MySQL_model extends CI_Model {
             FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND servicio_afectado NOT IN {$filtro_servicios}
-              AND servicio_afectado NOT IN {$filtro_internet}
-              AND servicio_afectado NOT IN {$filtro_voip}
-              AND servicio_afectado NOT IN {$filtro_movil}
-              AND servicio_afectado NOT IN {$filtro_telefonia}
+              AND servicio_afectado NOT IN {$this->grupo_internet}
+              AND servicio_afectado NOT IN {$this->grupo_movil}
+              AND servicio_afectado NOT IN {$this->grupo_telefonia}
+              AND servicio_afectado NOT IN {$this->grupo_voip}
+              AND servicio_afectado NOT IN {$this->grupo_datacenter}
               $filtro_tipo_cliente
             GROUP BY HOUR(fecha_creacion)
             ORDER BY HOUR(fecha_creacion)
@@ -739,50 +732,6 @@ class MySQL_model extends CI_Model {
             $tabla_incidencias = $this->tabla_hoy;
         }
 
-        $filtro_internet = "
-            (
-                'Internet',
-                'AccesoMetroXeth',
-                'AccesoMetroXeth_Ind',
-                'AccesoMetroXeth_IndResp',
-                'AccesoRespaldo',
-                'm-Internet'
-            )";
-
-        $filtro_voip = "
-            (
-                'TL_lineaSIP',
-                'cabecera_IP',
-                'extension_IP',
-                'cabecera_CD',
-                'extension_interna_CD',
-                'extension_CD',
-                'GrupoSIP',
-                'TL_lineaSIP_Reventa',
-                'TL_linea_SIP_nomada',
-                'extension_IP_IMS'
-            )";
-
-        $filtro_movil = "
-            (
-                'TLMovil',
-                'TLMovilMultiSIM'
-            )
-        ";
-
-        $filtro_telefonia = "
-            (
-                'AccesoBasico',
-                'CentGenerica',
-                'CentralitaNumCabeceraAMLT_E',
-                'TLAnalogica',
-                'GrupoLdbc',
-                'NumeracionCabecera',
-                'TL_Analogica_AMLT',
-                'TLVirtual'
-            )
-        ";
-
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -799,10 +748,11 @@ class MySQL_model extends CI_Model {
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND HOUR(fecha_creacion) = {$hora}
               AND servicio_afectado NOT IN {$filtro_servicios}
-              AND servicio_afectado NOT IN {$filtro_internet}
-              AND servicio_afectado NOT IN {$filtro_voip}
-              AND servicio_afectado NOT IN {$filtro_movil}
-              AND servicio_afectado NOT IN {$filtro_telefonia}
+              AND servicio_afectado NOT IN {$this->grupo_internet}
+              AND servicio_afectado NOT IN {$this->grupo_movil}
+              AND servicio_afectado NOT IN {$this->grupo_telefonia}
+              AND servicio_afectado NOT IN {$this->grupo_voip}
+              AND servicio_afectado NOT IN {$this->grupo_datacenter}
               $filtro_tipo_cliente
 
         ";
@@ -826,14 +776,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_internet = "
-            AND servicio_afectado IN (
-                                        'Internet',
-                                        'AccesoMetroXeth',
-                                        'AccesoMetroXeth_Ind',
-                                        'AccesoMetroXeth_IndResp',
-                                        'AccesoRespaldo',
-                                        'm-Internet'
-                                    )";
+            AND servicio_afectado IN {$this->grupo_internet}";
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -874,10 +817,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_movil = "
-            AND servicio_afectado IN (
-                                        'TLMovil',
-                                        'TLMovilMultiSIM'
-                                    )";
+            AND servicio_afectado IN {$this->grupo_movil}";
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -917,16 +857,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_telefonia = "
-            AND servicio_afectado IN (
-                                        'AccesoBasico',
-                                        'CentGenerica',
-                                        'CentralitaNumCabeceraAMLT_E',
-                                        'TLAnalogica',
-                                        'GrupoLdbc',
-                                        'NumeracionCabecera',
-                                        'TL_Analogica_AMLT',
-                                        'TLVirtual'
-                                    )";
+            AND servicio_afectado IN {$this->grupo_telefonia}";
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -967,18 +898,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_voip = "
-            AND servicio_afectado IN (
-                                        'TL_lineaSIP',
-                                        'cabecera_IP',
-                                        'extension_IP',
-                                        'cabecera_CD',
-                                        'extension_interna_CD',
-                                        'extension_CD',
-                                        'GrupoSIP',
-                                        'TL_lineaSIP_Reventa',
-                                        'TL_linea_SIP_nomada',
-                                        'extension_IP_IMS'
-                                    )";
+            AND servicio_afectado IN {$this->grupo_voip}";
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -1019,16 +939,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_datacenter = "
-            AND servicio_afectado IN (
-                                        'DatacenterVirtual',
-                                        'dominio',
-                                        'dominioresidencial',
-                                        'GrupoSIP',
-                                        'MicrosoftCSP',
-                                        'ServidorDedicado',
-                                        'ServidorVirtual',
-                                        'SVAdatacenterR'
-                                    )";
+            AND servicio_afectado IN {$this->grupo_datacenter}";
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -1214,51 +1125,6 @@ class MySQL_model extends CI_Model {
             $tabla_incidencias = $this->tabla_hoy;
         }
 
-        $filtro_internet = "
-            (
-                'Internet',
-                'AccesoMetroXeth',
-                'AccesoMetroXeth_Ind',
-                'AccesoMetroXeth_IndResp',
-                'AccesoRespaldo',
-                'm-Internet'
-            )
-        ";
-
-        $filtro_voip = "
-            (
-                'TL_lineaSIP',
-                'cabecera_IP',
-                'extension_IP',
-                'cabecera_CD',
-                'extension_interna_CD',
-                'extension_CD',
-                'GrupoSIP',
-                'TL_lineaSIP_Reventa',
-                'TL_linea_SIP_nomada',
-                'extension_IP_IMS'
-            )"; 
-
-        $filtro_movil = "
-            (
-                'TLMovil',
-                'TLMovilMultiSIM'
-            )
-        ";  
-
-        $filtro_telefonia = "
-            (
-                'AccesoBasico',
-                'CentGenerica',
-                'CentralitaNumCabeceraAMLT_E',
-                'TLAnalogica',
-                'GrupoLdbc',
-                'NumeracionCabecera',
-                'TL_Analogica_AMLT',
-                'TLVirtual'
-            )
-        ";
-
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -1274,10 +1140,11 @@ class MySQL_model extends CI_Model {
             FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               AND servicio_afectado NOT IN {$filtro_servicios}
-              AND servicio_afectado NOT IN {$filtro_internet}
-              AND servicio_afectado NOT IN {$filtro_voip}
-              AND servicio_afectado NOT IN {$filtro_movil}
-              AND servicio_afectado NOT IN {$filtro_telefonia}
+              AND servicio_afectado NOT IN {$this->grupo_internet}
+              AND servicio_afectado NOT IN {$this->grupo_movil}
+              AND servicio_afectado NOT IN {$this->grupo_telefonia}
+              AND servicio_afectado NOT IN {$this->grupo_voip}
+              AND servicio_afectado NOT IN {$this->grupo_datacenter}
               $filtro_tipo_cliente
 
         ";
@@ -1300,14 +1167,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_internet = "
-            AND servicio_afectado IN (
-                                        'Internet',
-                                        'AccesoMetroXeth',
-                                        'AccesoMetroXeth_Ind',
-                                        'AccesoMetroXeth_IndResp',
-                                        'AccesoRespaldo',
-                                        'm-Internet'
-                                    )
+            AND servicio_afectado IN {$this->grupo_internet}
         "; 
 
         switch ($tipo_cliente) {
@@ -1348,10 +1208,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_movil = "
-            AND servicio_afectado IN (
-                                        'TLMovil',
-                                        'TLMovilMultiSIM'
-                                    )
+            AND servicio_afectado IN {$this->grupo_movil}
         "; 
 
         switch ($tipo_cliente) {
@@ -1391,16 +1248,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_telefonia = "
-            AND servicio_afectado IN (
-                                        'AccesoBasico',
-                                        'CentGenerica',
-                                        'CentralitaNumCabeceraAMLT_E',
-                                        'TLAnalogica',
-                                        'GrupoLdbc',
-                                        'NumeracionCabecera',
-                                        'TL_Analogica_AMLT',
-                                        'TLVirtual'
-                                    )
+            AND servicio_afectado IN {$this->grupo_telefonia}
         "; 
 
         switch ($tipo_cliente) {
@@ -1440,18 +1288,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_voip = "
-            AND servicio_afectado IN (
-                                        'TL_lineaSIP',
-                                        'cabecera_IP',
-                                        'extension_IP',
-                                        'cabecera_CD',
-                                        'extension_interna_CD',
-                                        'extension_CD',
-                                        'GrupoSIP',
-                                        'TL_lineaSIP_Reventa',
-                                        'TL_linea_SIP_nomada',
-                                        'extension_IP_IMS'
-                                    )";
+            AND servicio_afectado IN {$this->grupo_voip}";
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -1491,16 +1328,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_datacenter = "
-            AND servicio_afectado IN (
-                                        'DatacenterVirtual',
-                                        'dominio',
-                                        'dominioresidencial',
-                                        'GrupoSIP',
-                                        'MicrosoftCSP',
-                                        'ServidorDedicado',
-                                        'ServidorVirtual',
-                                        'SVAdatacenterR'
-                                    )";
+            AND servicio_afectado IN {$this->grupo_datacenter}";
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -2278,14 +2106,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_internet = "
-            AND servicio_afectado IN (
-                                        'Internet',
-                                        'AccesoMetroXeth',
-                                        'AccesoMetroXeth_Ind',
-                                        'AccesoMetroXeth_IndResp',
-                                        'AccesoRespaldo',
-                                        'm-Internet'
-                                    )";
+            AND servicio_afectado IN {$this->grupo_internet}";
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -2331,10 +2152,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_movil = "
-            AND servicio_afectado IN (
-                                        'TLMovil',
-                                        'TLMovilMultiSIM'
-                                    )";
+            AND servicio_afectado IN {$this->grupo_movil}";
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -2380,16 +2198,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_telefonia = "
-            AND servicio_afectado IN (
-                                        'AccesoBasico',
-                                        'CentGenerica',
-                                        'CentralitaNumCabeceraAMLT_E',
-                                        'TLAnalogica',
-                                        'GrupoLdbc',
-                                        'NumeracionCabecera',
-                                        'TL_Analogica_AMLT',
-                                        'TLVirtual'
-                                    )";
+            AND servicio_afectado IN {$this->grupo_telefonia}";
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -2434,18 +2243,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_voip = "
-            AND servicio_afectado IN (
-                                        'TL_lineaSIP',
-                                        'cabecera_IP',
-                                        'extension_IP',
-                                        'cabecera_CD',
-                                        'extension_interna_CD',
-                                        'extension_CD',
-                                        'GrupoSIP',
-                                        'TL_lineaSIP_Reventa',
-                                        'TL_linea_SIP_nomada',
-                                        'extension_IP_IMS'
-                                    )";
+            AND servicio_afectado IN {$this->grupo_voip}";
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -2491,16 +2289,7 @@ class MySQL_model extends CI_Model {
         }
 
         $filtro_datacenter = "
-            AND servicio_afectado IN (
-                                        'DatacenterVirtual',
-                                        'dominio',
-                                        'dominioresidencial',
-                                        'GrupoSIP',
-                                        'MicrosoftCSP'
-                                        'ServidorDedicado',
-                                        'ServidorVirtual',
-                                        'SVAdatacenterR'
-                                    )";
+            AND servicio_afectado IN {$this->grupo_datacenter}";
 
         switch ($tipo_cliente) {
             case 'todo':
@@ -2541,39 +2330,6 @@ class MySQL_model extends CI_Model {
             $filtro_hora_umbral = "AND hora <= " . date("G");
         }
 
-        $filtro_voip = "
-            (
-                'TL_lineaSIP',
-                'cabecera_IP',
-                'extension_IP',
-                'cabecera_CD',
-                'extension_interna_CD',
-                'extension_CD',
-                'GrupoSIP',
-                'TL_lineaSIP_Reventa',
-                'TL_linea_SIP_nomada',
-                'extension_IP_IMS'
-            )";
-
-        $filtro_movil = "
-            (
-                'TLMovil',
-                'TLMovilMultiSIM'
-            )";
-
-        $filtro_telefonia = "
-            (
-                'AccesoBasico',
-                'CentGenerica',
-                'CentralitaNumCabeceraAMLT_E',
-                'TLAnalogica',
-                'GrupoLdbc',
-                'NumeracionCabecera',
-                'TL_Analogica_AMLT',
-                'TLVirtual'
-            )
-        ";
-
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -2591,9 +2347,11 @@ class MySQL_model extends CI_Model {
             WHERE numero_dia = {$dia}
               $filtro_hora_umbral
               AND servicio_afectado NOT IN {$filtro_servicios}
-              AND servicio_afectado NOT IN {$filtro_voip}
-              AND servicio_afectado NOT IN {$filtro_movil}
-              AND servicio_afectado NOT IN {$filtro_telefonia}
+              AND servicio_afectado NOT IN {$this->grupo_internet}
+              AND servicio_afectado NOT IN {$this->grupo_movil}
+              AND servicio_afectado NOT IN {$this->grupo_telefonia}
+              AND servicio_afectado NOT IN {$this->grupo_voip}
+              AND servicio_afectado NOT IN {$this->grupo_datacenter}
               $filtro_tipo_cliente
             GROUP BY hora
 
