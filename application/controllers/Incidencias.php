@@ -190,6 +190,17 @@ echo "</pre>";
             }
         }
 
+
+
+        //  Control para las incidencias sin servicio afectado ya que sus umbrales
+        //  no están completos. Vamos rellenando con 0 las horas para las que
+        //  no haya datos (hasta llegar a la hora actual)
+        for ($h = 0; $h <= date("G"); $h++) {
+            if (!array_key_exists($h, $datos_umbrales_servicio["sin"])) {
+                $datos_umbrales_servicio["sin"][$h] = 0;
+            }
+        }
+
         //  Estructuramos el array con los umbrales por todos los servicios y hora
         $datos_umbrales_servicios_total_hora = [];
         foreach ($umbrales_servicios_total_hora as $datos) {

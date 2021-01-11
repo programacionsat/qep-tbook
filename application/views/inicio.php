@@ -176,7 +176,6 @@ foreach ($listado_servicios_mostrar_web as $servicio_afectado => $servicio_afect
                 //  Lo esperado para ese servicio en ese tramo horario:
                 $umbral = $umbrales_servicios[$servicio_afectado][$h];
 
-
                 if ($umbrales_servicios[$servicio_afectado][$h] != 0) {
                     $porcentaje_desviacion = floatval(round((($servicios[$servicio_afectado][$h] - $umbrales_servicios[$servicio_afectado][$h]) /
                                                 $umbrales_servicios[$servicio_afectado][$h]) * 100, 2));
@@ -263,7 +262,6 @@ foreach ($listado_servicios_mostrar_web as $servicio_afectado => $servicio_afect
         echo "
                                 <td class=\"celda-incidencias {$clase_sensibilidad}\">
                                     <a class=\"dato-inc {$clase_dato_sensibilidad} dato-inc-servicio-total\" data-toggle=\"modal\" data-target=\"#modal-listado-incidencias-servicio\" data-servicio=\"{$servicio_afectado}\" data-fecha=\"{$fecha_consulta->format('Y-m-d')}\" data-tipo-cliente=\"{$this->input->post("tipo_cliente")}\"><span title=\"{$porcentaje_total} %\">{$servicios_total[$servicio_afectado]}</span></a><br>
-                                    <!-- {$umbral} <br> -->
                                     <span class=\"dato-des {$clase_dato_desviacion}\">" . str_replace(".", ",", $porcentaje_desviacion) . " %</span>
                                     </td>
                             </tr>" . PHP_EOL;
@@ -458,7 +456,7 @@ foreach ($listado_salidas as $salida) {
                 $porcentaje = number_format(round(($listado_incidencias_salida_hora[$salida["nombre_corto"]][$h] / $incidencias_hora[$h]) * 100, 2), "2", ",", ".");
 
                 //  Lo esperado para ese servicio en ese tramo horario:
-                //$umbral = $umbrales_servicios[$servicio_afectado][$h];
+                $umbral = $umbrales_servicios[$servicio_afectado][$h];
 
 
                 if ($umbrales_salidas[$salida["nombre_corto"]][$h] != 0) {
