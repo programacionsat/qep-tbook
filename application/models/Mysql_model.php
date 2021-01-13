@@ -16,6 +16,7 @@ class MySQL_model extends CI_Model {
             'AccesoMetroXeth_IndResp',
             'AccesoRespaldo',
             'Internet',
+            'lambda_directo',
             'm-Internet'
         )";
     private $grupo_movil = "
