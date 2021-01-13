@@ -27,10 +27,13 @@ class MySQL_model extends CI_Model {
     private $grupo_telefonia = "
         (
             'AccesoBasico',
+            'CentDavosNet',
             'CentGenerica',
+            'CentPanaTDA15',
             'CentralitaNumCabeceraAMLT_E',
             'CentSiemens',
             'GrupoLdbc',
+            'GrupoLdp',
             'NumeracionAdicional',
             'NumeracionCabecera',
             'NumeracionCabecera_AMLT',
