@@ -458,7 +458,6 @@ foreach ($listado_salidas as $salida) {
                 //  Lo esperado para ese servicio en ese tramo horario:
                 $umbral = $umbrales_servicios[$servicio_afectado][$h];
 
-
                 if ($umbrales_salidas[$salida["nombre_corto"]][$h] != 0) {
                     $porcentaje_desviacion = floatval(round((($listado_incidencias_salida_hora[$salida["nombre_corto"]][$h] - $umbrales_salidas[$salida["nombre_corto"]][$h]) /
                                                 $umbrales_salidas[$salida["nombre_corto"]][$h]) * 100, 2));

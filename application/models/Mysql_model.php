@@ -59,7 +59,6 @@ class MySQL_model extends CI_Model {
             'DatacenterVirtual',
             'dominio',
             'dominioresidencial',
-            'GrupoSIP',
             'MicrosoftCSP',
             'ServiciosISP',
             'ServidorDedicado',
@@ -334,18 +333,6 @@ class MySQL_model extends CI_Model {
             $tabla_incidencias = $this->tabla_hoy;
         }
 
-        $filtro_telefonia = "
-            AND servicio_afectado IN (
-                                        'AccesoBasico',
-                                        'CentGenerica',
-                                        'CentralitaNumCabeceraAMLT_E',
-                                        'TLAnalogica',
-                                        'GrupoLdbc',
-                                        'NumeracionCabecera',
-                                        'TL_Analogica_AMLT',
-                                        'TLVirtual'
-                                    )";
-
         switch ($tipo_cliente) {
             case 'todo':
                 $filtro_tipo_cliente = "";
@@ -361,7 +348,7 @@ class MySQL_model extends CI_Model {
                    HOUR(fecha_creacion) as hora_incidencia
             FROM $tabla_incidencias
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
-              $filtro_telefonia
+              AND servicio_afectado IN {$this->grupo_telefonia}
               $filtro_tipo_cliente
             GROUP BY HOUR(fecha_creacion)
             ORDER BY HOUR(fecha_creacion)
