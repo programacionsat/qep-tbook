@@ -57,6 +57,7 @@ class MySQL_model extends CI_Model {
         )";
     private $grupo_datacenter = "
         (
+            'Albergue',
             'DatacenterVirtual',
             'dominio',
             'dominioresidencial',
@@ -64,7 +65,8 @@ class MySQL_model extends CI_Model {
             'ServiciosISP',
             'ServidorDedicado',
             'ServidorVirtual',
-            'SVAdatacenterR'
+            'SVAdatacenterR',
+            'Web'
         )";
 
     public function __construct() {
