@@ -16,9 +16,11 @@ class MySQL_model extends CI_Model {
             'AccesoMetroXeth_IndResp',
             'AccesoOtroOperador',
             'AccesoRespaldo',
+            'equipo_internet',
             'Internet',
             'lambda_directo',
-            'm-Internet'
+            'm-Internet',
+            'PaP_directo'
         )";
     private $grupo_movil = "
         (
