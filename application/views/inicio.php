@@ -173,8 +173,10 @@ foreach ($listado_servicios_mostrar_web as $servicio_afectado => $servicio_afect
                 //  al total de averías en ese tramo horario
                 $porcentaje = number_format(round(($servicios[$servicio_afectado][$h] / $incidencias_hora[$h]) * 100, 2), "2", ",", ".");
 
+                /*
                 //  Lo esperado para ese servicio en ese tramo horario:
-                $umbral = $umbrales_servicios[$servicio_afectado][$h];
+                    $umbral = $umbrales_servicios[$servicio_afectado][$h];
+                 */
 
                 if ($umbrales_servicios[$servicio_afectado][$h] != 0) {
                     $porcentaje_desviacion = floatval(round((($servicios[$servicio_afectado][$h] - $umbrales_servicios[$servicio_afectado][$h]) /
@@ -226,8 +228,10 @@ foreach ($listado_servicios_mostrar_web as $servicio_afectado => $servicio_afect
         //  al total de averías 
         $porcentaje_total = number_format(round(($servicios_total[$servicio_afectado] / $incidencias_total) * 100, 2), "2", ",", ".");
 
+        /*
         //  Lo esperado para ese servicio:
-        $umbral = $umbrales_servicios_total[$servicio_afectado];
+            $umbral = $umbrales_servicios_total[$servicio_afectado];
+         */
 
 
         if ($umbrales_servicios_total[$servicio_afectado] != 0) {
@@ -285,8 +289,10 @@ for ($h = $hora_inicio; $h <= $hora_fin; $h++) {
     if (array_key_exists($h, $total_servicio_hora)) {
         $total = array_sum($total_servicio_hora[$h]);
 
+        /*
         //  Lo esperado de incidencias para esta hora
-        $umbral = $umbrales_servicios_total_hora[$h];
+            $umbral = $umbrales_servicios_total_hora[$h];
+         */
 
         if ($umbrales_servicios_total_hora[$h] != 0) {
             $porcentaje_desviacion = round((($total - $umbrales_servicios_total_hora[$h]) /
@@ -455,8 +461,10 @@ foreach ($listado_salidas as $salida) {
                 //  al total de averías en ese tramo horario
                 $porcentaje = number_format(round(($listado_incidencias_salida_hora[$salida["nombre_corto"]][$h] / $incidencias_hora[$h]) * 100, 2), "2", ",", ".");
 
+                /*
                 //  Lo esperado para ese servicio en ese tramo horario:
                 $umbral = $umbrales_servicios[$servicio_afectado][$h];
+                */
 
                 if ($umbrales_salidas[$salida["nombre_corto"]][$h] != 0) {
                     $porcentaje_desviacion = floatval(round((($listado_incidencias_salida_hora[$salida["nombre_corto"]][$h] - $umbrales_salidas[$salida["nombre_corto"]][$h]) /
