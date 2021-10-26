@@ -16,11 +16,12 @@ class MySQL_model extends CI_Model {
             'AccesoMetroXeth_IndResp',
             'AccesoOtroOperador',
             'AccesoRespaldo',
-            'equipo_internet',
+            'INTERNET',
             'Internet',
+            'PaP_directo'
+            'equipo_internet',
             'lambda_directo',
             'm-Internet',
-            'PaP_directo'
         )";
 
     private $grupo_movil = "
@@ -46,18 +47,18 @@ class MySQL_model extends CI_Model {
             'CentPanaTDA15',
             'CentPanaTDA30',
             'CentQuicknet',
-            'CentralitaNumAdicionalAMLT_E',
-            'CentralitaNumCabeceraAMLT_E',
             'CentSiemens',
             'CentVarix',
+            'CentralitaNumAdicionalAMLT_E',
+            'CentralitaNumCabeceraAMLT_E',
             'GrupoLdbc',
             'GrupoLdp',
             'NumeracionAdicional',
             'NumeracionCabecera',
             'NumeracionCabecera_AMLT',
+            'TLAnalogica'
             'TLVirtual'
             'TL_Analogica_AMLT',
-            'TLAnalogica'
         )";
 
     private $grupo_voip = "
