@@ -90,6 +90,13 @@ class MySQL_model extends CI_Model {
             'Web'
         )";
 
+    private $grupo_tvdigital = "
+        (
+            'TVDIGITAL',
+            'TVDixital'
+        )
+    ";
+
     public function __construct() {
         parent::__construct();
         $this->mysql = $this->load->database("mysql", TRUE);
@@ -479,6 +486,46 @@ class MySQL_model extends CI_Model {
 
     }
 
+    public function obtener_incidencias_tvdigital_hora($fecha, $tipo_cliente) {
+
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
+        $filtro_tvdigital = "
+            AND servicio_afectado IN {$this->grupo_tvdigital}";
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT COUNT(id_ticket) as total_incidencias,
+                   HOUR(fecha_creacion) as hora_incidencia
+            FROM $tabla_incidencias
+            WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
+              $filtro_tvdigital
+              $filtro_tipo_cliente
+            GROUP BY HOUR(fecha_creacion)
+            ORDER BY HOUR(fecha_creacion)
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array();
+
+    }
     public function obtener_incidencias_otros_servicios_hora($filtro_servicios, $fecha, $tipo_cliente) {
 
         //  Si la fecha de consulta no es el día actual, entonces
@@ -982,7 +1029,45 @@ class MySQL_model extends CI_Model {
 
     }
 
+    //  Devuelve toda la información sobre una incidencia en base a la fecha y hora
+    public function obtener_listado_incidencias_tvdigital_hora($fecha, $hora, $tipo_cliente) {
 
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
+        $filtro_tvdigital = "
+            AND servicio_afectado IN {$this->grupo_tvdigital}";
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT *
+            FROM $tabla_incidencias 
+            WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
+              AND HOUR(fecha_creacion) = {$hora}
+              $filtro_tvdigital
+              $filtro_tipo_cliente
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array();
+
+    }
     public function obtener_listado_incidencias_salidas_hora($salida, $fecha, $hora, $tipo_cliente) {
 
         //  Si la fecha de consulta no es el día actual, entonces
@@ -1330,7 +1415,6 @@ class MySQL_model extends CI_Model {
 
     }
 
-
     //  Devuelve toda la información sobre una incidencia en base a la fecha
     public function obtener_listado_incidencias_datacenter($fecha, $tipo_cliente) {
 
@@ -1360,6 +1444,45 @@ class MySQL_model extends CI_Model {
             FROM $tabla_incidencias 
             WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
               $filtro_datacenter
+              $filtro_tipo_cliente
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array();
+
+    }
+
+    //  Devuelve toda la información sobre una incidencia en base a la fecha
+    public function obtener_listado_incidencias_tvdigital($fecha, $tipo_cliente) {
+
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha != date("Y-m-d")) {
+            $tabla_incidencias = "incidencias_tmp_" . str_replace("-", "", $fecha);
+        } else {
+            $tabla_incidencias = $this->tabla_hoy;
+        }
+
+        $filtro_tvdigital = "
+            AND servicio_afectado IN {$this->grupo_tvdigital}";
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT *
+            FROM $tabla_incidencias 
+            WHERE DATE_FORMAT(fecha_creacion, '%Y-%m-%d') = '{$fecha}'
+              $filtro_tvdigital
               $filtro_tipo_cliente
 
         ";
@@ -2334,6 +2457,50 @@ class MySQL_model extends CI_Model {
 
     }
 
+    //  Obtener umbrales de incidencias relacionadas con TV Digital
+    //  Dependiendo de la hora del día, el valor será diferente ya que
+    //  no tiene sentido que si estamos a las 12, comparemos con los
+    //  umbrales del día entero.
+    public function obtener_umbral_tvdigital_hora($dia, $tipo_cliente, $fecha_consulta) {
+
+        //  Si la fecha de consulta no es el día actual, entonces
+        //  tenemos que hacer la consulta en el histórico
+        if ($fecha_consulta != date("Y-m-d")) {
+            $filtro_hora_umbral = "";
+        } else {
+            $filtro_hora_umbral = "AND hora <= " . date("G");
+        }
+
+        $filtro_tvdigital = "
+            AND servicio_afectado IN {$this->grupo_tvdigital}";
+
+        switch ($tipo_cliente) {
+            case 'todo':
+                $filtro_tipo_cliente = "";
+                break;
+            case 'empresa':
+                $filtro_tipo_cliente = "AND tipo_cliente IN ('Gran Cuenta', 'Mediana') ";
+                break;
+        }
+
+        $sql = "
+
+            SELECT hora, 
+                   SUM(incidencias_promedio) AS incidencias_promedio
+            FROM $this->tabla_umbrales_servicios
+            WHERE numero_dia = {$dia}
+              $filtro_hora_umbral 
+              $filtro_tvdigital
+              $filtro_tipo_cliente 
+            GROUP BY hora
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
+
+    }
 
     public function obtener_umbral_otros_servicios_hora($filtro_servicios, $dia, $tipo_cliente, $fecha_consulta) {
 

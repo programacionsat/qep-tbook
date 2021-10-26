@@ -141,6 +141,10 @@ echo "</pre>";
                     $incidencias_servicio[$servicio] = $this->mysql_model->obtener_incidencias_movil_hora($fecha_consulta->format("Y-m-d"), $tipo_cliente);
                     $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_movil_hora($numero_dia_semana, $tipo_cliente, $fecha_consulta->format("Y-m-d"));
                     break;
+                case 'tvdigital':
+                    $incidencias_servicio[$servicio] = $this->mysql_model->obtener_incidencias_tvdigital_hora($fecha_consulta->format("Y-m-d"), $tipo_cliente);
+                    $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_movil_hora($numero_dia_semana, $tipo_cliente, $fecha_consulta->format("Y-m-d"));
+                    break;
                 case 'telefonia':
                     $incidencias_servicio[$servicio] = $this->mysql_model->obtener_incidencias_telefonia_hora($fecha_consulta->format("Y-m-d"), $tipo_cliente);
                     $umbrales_servicio[$servicio] = $this->mysql_model->obtener_umbral_telefonia_hora($numero_dia_semana, $tipo_cliente, $fecha_consulta->format("Y-m-d"));
@@ -405,6 +409,9 @@ exit();
                 break;
             case 'movil':
                 $incidencias_servicio_hora = $this->mysql_model->obtener_listado_incidencias_movil_hora($fecha, $hora, $tipo_cliente);
+                break;
+            case 'tvdigital':
+                $incidencias_servicio_hora = $this->mysql_model->obtener_listado_incidencias_tvdigital_hora($fecha, $hora, $tipo_cliente);
                 break;
             case 'telefonia':
                 $incidencias_servicio_hora = $this->mysql_model->obtener_listado_incidencias_telefonia_hora($fecha, $hora, $tipo_cliente);
@@ -838,6 +845,9 @@ exit();
             case 'movil':
                 $incidencias_servicio = $this->mysql_model->obtener_listado_incidencias_movil($fecha, $tipo_cliente);
                 break;
+            case 'tvdigital':
+                $incidencias_servicio = $this->mysql_model->obtener_listado_incidencias_tvdigital($fecha, $tipo_cliente);
+                break;
             case 'telefonia':
                 $incidencias_servicio = $this->mysql_model->obtener_listado_incidencias_telefonia($fecha, $tipo_cliente);
                 break;
@@ -858,8 +868,6 @@ exit();
                 $incidencias_servicio = $this->mysql_model->obtener_listado_incidencias_servicio($servicio, $fecha, $tipo_cliente);
                 break;
         }
-
-        
         
         echo "
             <table class=\"table table-sm table-striped tabla-listado-incidencias\">
