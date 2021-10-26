@@ -56,9 +56,10 @@ class MySQL_model extends CI_Model {
             'NumeracionAdicional',
             'NumeracionCabecera',
             'NumeracionCabecera_AMLT',
-            'TLAnalogica'
-            'TLVirtual'
-            'TL_Analogica_AMLT',
+            'TELEFONO',
+            'TLAnalogica',
+            'TLVirtual',
+            'TL_Analogica_AMLT'
         )";
 
     private $grupo_voip = "
