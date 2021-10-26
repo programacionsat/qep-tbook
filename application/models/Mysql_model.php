@@ -22,8 +22,10 @@ class MySQL_model extends CI_Model {
             'm-Internet',
             'PaP_directo'
         )";
+
     private $grupo_movil = "
         (
+            'TL',
             'TLMovil',
             'TLMovilMultiSIM',
             'TLMovil_Ajeno',
@@ -31,6 +33,7 @@ class MySQL_model extends CI_Model {
             'TLMovil_M2M_Ajeno',
             'TLMovil_MultiSIMDatos'
         )";
+
     private $grupo_telefonia = "
         (
             'AccesoBasico',
@@ -52,23 +55,25 @@ class MySQL_model extends CI_Model {
             'NumeracionAdicional',
             'NumeracionCabecera',
             'NumeracionCabecera_AMLT',
-            'TL_Analogica_AMLT',
-            'TLAnalogica',
             'TLVirtual'
+            'TL_Analogica_AMLT',
+            'TLAnalogica'
         )";
+
     private $grupo_voip = "
         (
-            'TL_lineaSIP',
-            'cabecera_IP',
-            'extension_IP',
             'cabecera_CD',
-            'extension_interna_CD',
+            'cabecera_IP',
             'extension_CD',
-            'GrupoSIP',
-            'TL_lineaSIP_Reventa',
-            'TL_linea_SIP_nomada',
+            'extension_interna_CD',
+            'extension_IP',
             'extension_IP_IMS'
+            'GrupoSIP',
+            'TL_lineaSIP',
+            'TL_lineaSIP_Reventa',
+            'TL_linea_SIP_nomada'
         )";
+
     private $grupo_datacenter = "
         (
             'Albergue',
