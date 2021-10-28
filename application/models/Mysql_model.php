@@ -14,6 +14,7 @@ class MySQL_model extends CI_Model {
             'AccesoMetroXeth',
             'AccesoMetroXeth_Ind',
             'AccesoMetroXeth_IndResp',
+            'AccesoMetroXeth_Respaldo',
             'AccesoOtroOperador',
             'AccesoRespaldo',
             'INTERNET',
