@@ -27,6 +27,7 @@ class MySQL_model extends CI_Model {
 
     private $grupo_movil = "
         (
+            'MOVIL',
             'TL',
             'TLMovil',
             'TLMovilMultiSIM',
