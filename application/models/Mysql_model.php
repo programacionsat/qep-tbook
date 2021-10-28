@@ -64,30 +64,31 @@ class MySQL_model extends CI_Model {
 
     private $grupo_voip = "
         (
-            'cabecera_CD',
-            'cabecera_IP',
-            'extension_CD',
-            'extension_interna_CD',
-            'extension_IP',
-            'extension_IP_IMS'
             'GrupoSIP',
             'TL_lineaSIP',
             'TL_lineaSIP_Reventa',
-            'TL_linea_SIP_nomada'
+            'TL_linea_SIP_nomada',
+            'cabecera_CD',
+            'cabecera_IP',
+            'extension_CD',
+            'extension_IP',
+            'extension_IP_IMS',
+            'extension_interna_CD'
         )";
 
     private $grupo_datacenter = "
         (
             'Albergue',
+            'BBDD',
             'DatacenterVirtual',
-            'dominio',
-            'dominioresidencial',
             'MicrosoftCSP',
+            'SVAdatacenterR',
             'ServiciosISP',
             'ServidorDedicado',
             'ServidorVirtual',
-            'SVAdatacenterR',
-            'Web'
+            'Web',
+            'dominio',
+            'dominioresidencial'
         )";
 
     private $grupo_tvdigital = "
