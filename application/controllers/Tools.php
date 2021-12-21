@@ -491,4 +491,85 @@ class Tools extends CI_Controller {
 
     }
 
+    // Método para rellenar los umbrales que no existen.
+    // Es una función temporal ya que cuando se haga como dios manda el 
+    // cálculo de los umbrales, se tendrá en cuenta la ausencia de información 
+    // para rellenar esos umbrales con 0
+    public function rellenar_umbrales() {
+
+        $tipos_cliente = [
+            "AMBOS",
+            "COLABORADOR",
+            "GRAN CUENTA",
+            "MEDIANA",
+            "MICROEMPRESA",
+            "RESIDENCIAL"
+        ];
+
+        $listado_servicios = $this->mysql_model->obtener_listado_servicios_afectados();
+
+        // Para cada día de la semana (lunes = 1, martes = 2...)
+        for ($d = 1; $d < 8; $d++) {
+            foreach ($tipos_cliente as $tipo_cliente) {
+                foreach ($listado_servicios as $servicio) {
+                    for ($h = 0; $h < 1; $h++) {
+                        $buscar_umbral = $this->mysql_model->obtener_umbral_servicio_cliente($servicio["nombre"], $tipo_cliente, $d, $h);
+                        if (count($buscar_umbral) == 0) {
+                            echo "No existe umbral. Rellenando..." . PHP_EOL;
+                            echo "         Día: {$d}" . PHP_EOL;
+                            echo "        Hora: {$h}" . PHP_EOL;
+                            echo "Tipo cliente: {$tipo_cliente}" . PHP_EOL;
+                            echo "    Servicio: {$servicio["nombre"]}" . PHP_EOL . PHP_EOL;
+                            $insertar_umbral = $this->mysql_model->insertar_umbral_servicio_cliente($servicio["nombre"], $tipo_cliente, $d, $h, 0);
+                            if (!$insertar_umbral) {
+                                echo "Error al insertar umbral";
+                                exit();
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+    }
+
+    // Método para rellenar los umbrales de incidencias sin servicio afectado
+    // Es una función temporal ya que cuando se haga como dios manda el 
+    // cálculo de los umbrales, se tendrá en cuenta la ausencia de información 
+    // para rellenar esos umbrales con 0
+    public function rellenar_umbrales_sin_servicio() {
+
+        $tipos_cliente = [
+            "AMBOS",
+            "COLABORADOR",
+            "GRAN CUENTA",
+            "MEDIANA",
+            "MICROEMPRESA",
+            "RESIDENCIAL"
+        ];
+
+        // Para cada día de la semana (lunes = 1, martes = 2...)
+        for ($d = 1; $d < 8; $d++) {
+            foreach ($tipos_cliente as $tipo_cliente) {
+                for ($h = 0; $h < 1; $h++) {
+                    $buscar_umbral_sin_servicio = $this->mysql_model->obtener_umbral_sin_servicio_cliente($tipo_cliente, $d, $h);
+                    if (count($buscar_umbral_sin_servicio) == 0) {
+                        echo "No existe umbral. Rellenando..." . PHP_EOL;
+                        echo "         Día: {$d}" . PHP_EOL;
+                        echo "        Hora: {$h}" . PHP_EOL;
+                        echo "Tipo cliente: {$tipo_cliente}" . PHP_EOL;
+                        $insertar_umbral = $this->mysql_model->insertar_umbral_servicio_cliente(null, $tipo_cliente, $d, $h, 0);
+                        if (!$insertar_umbral) {
+                            echo "Error al insertar umbral";
+                            exit();
+                        }
+                    }
+                }
+            }
+
+        }
+
+    }
+
 }

@@ -15,7 +15,8 @@ if (!$es_historico) {
             <h1><?php echo $titulo_web; ?> <span class="text-muted" style="font-size: 2rem;"><?php echo $fecha_consulta->format("d/m/Y"); ?></span></h1>
             <div class="row mt-3">
                 <div class="col">
-                    <p>Resumen de todos los tickets de cliente creados en Tbook durante el día de hoy segmentados por hora y servicios.</p>
+                    <p>Resumen de todos los tickets de cliente creados en Tbook durante el día de hoy segmentados por hora y servicios. 
+                    <?php if (!$es_historico) { ?>Datos actualizados cada 10 minutos.</p> <?php } ?></p>
                     <p>Se muestran en rojo claro todos aquellos que superan el <?php echo $sensibilidad_min; ?> % de lo esperado y en rojo oscuro todos aquellos que superan el <?php echo $sensibilidad_max; ?> % de lo esperado.</p>
                 </div>
             </div>

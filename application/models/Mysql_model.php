@@ -7,6 +7,7 @@ class MySQL_model extends CI_Model {
     private $tabla_historico = "incidencias_historico";
     private $tabla_umbrales_servicios = "umbrales_servicios";
     private $tabla_umbrales_salidas = "umbrales_salidas";
+    private $tabla_servicios = "servicios_afectados_master";
 
     // Agrupaciones de servicios
     private $grupo_internet = "
@@ -2769,5 +2770,101 @@ class MySQL_model extends CI_Model {
 
         return $query->result_array(); 
     }
+
+    public function obtener_listado_servicios_afectados() {
+        
+        $sql = "
+            SELECT 
+                nombre,
+                nombre_web
+             FROM {$this->tabla_servicios}
+            WHERE es_servicio = 's'
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
+    }
+
+    public function obtener_umbral_servicio_cliente($servicio, $tipo_cliente, $numero_dia, $hora) {
+
+        $sql = "
+            SELECT 
+                *
+              FROM {$this->tabla_umbrales_servicios}
+             WHERE tipo_cliente = '{$tipo_cliente}'
+               AND servicio_afectado = '{$servicio}'
+               AND numero_dia = {$numero_dia}
+               AND hora = {$hora}
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
+        
+    }
+
+    //  Inserta el valor de un umbral para los servicios
+    public function insertar_umbral_servicio_cliente($servicio, $tipo_cliente, $numero_dia, $hora, $umbral) {
+
+        switch ($numero_dia) {
+            case 1:
+                $nombre_dia = "Lunes";
+                break;
+            case 2:
+                $nombre_dia = "Martes";
+                break;
+            case 3:
+                $nombre_dia = "Miércoles";
+                break;
+            case 4:
+                $nombre_dia = "Jueves";
+                break;
+            case 5:
+                $nombre_dia = "Viernes";
+                break;
+            case 6:
+                $nombre_dia = "Sábado";
+                break;
+            case 7:
+                $nombre_dia = "Domingo";
+                break;
+        }
+
+        $datos = [
+            "nombre_dia"            => $nombre_dia,
+            "numero_dia"            => $numero_dia,
+            "hora"                  => $hora,
+            "servicio_afectado"     => $servicio,
+            "tipo_cliente"          => $tipo_cliente,
+            "incidencias_promedio"  => $umbral
+        ];
+
+        $query = $this->mysql->insert($this->tabla_umbrales_servicios, $datos);
+
+        return $query;
+
+    }
+
+    public function obtener_umbral_sin_servicio_cliente($tipo_cliente, $numero_dia, $hora) {
+
+        $sql = "
+            SELECT 
+                *
+              FROM {$this->tabla_umbrales_servicios}
+             WHERE tipo_cliente = '{$tipo_cliente}'
+               AND servicio_afectado IS NULL
+               AND numero_dia = {$numero_dia}
+               AND hora = {$hora}
+
+        ";
+
+        $query = $this->mysql->query($sql);
+
+        return $query->result_array(); 
+        
+    }
+
 }
 ?>
