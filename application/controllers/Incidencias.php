@@ -17,6 +17,8 @@ class Incidencias extends CI_Controller {
      
     public function dashboard() {
 
+        //$this->output->enable_profiler(TRUE);
+
         // Insertar visita del usuario:
         if (!isset($_SERVER["HTTP_CAS_USER"])) {
             $usuario = "H157";
@@ -35,7 +37,7 @@ class Incidencias extends CI_Controller {
         }
 
         //  Sensibilidad (para mostrar desviación respecto umbrales)
-        if ($this->input->post() == null) {
+        if (($this->input->post("sensibilidad_minima") == null) || ($this->input->post("sensibilidad_maxima") == null)) {
             $sensibilidad_min = 10;
             $sensibilidad_max = 20;
         } else {
